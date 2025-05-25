@@ -1,0 +1,600 @@
+/* blog.css */
+
+body {
+    background-color: rgba(17, 0, 31, 1); /* Ensure proper opacity or use a solid value */
+    margin: 0; /* Reset margins to avoid default browser styles */
+}
+/* Navbar Link Styles */
+nav ul li a {
+    color: #ff7f50; /* Coral color for links */
+    transition: color 0.3s ease-in-out; /* Smooth hover effect */
+}
+
+nav ul li a:hover {
+    color: #ffd700; /* Golden color for hover */
+}
+/* Sidebar Styles */
+#sidebar {
+    background-color: #1a1a2e; /* Darker theme for the sidebar */
+    color: white;
+    width: 16rem; /* 64px */
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    right: 0;
+    transform: translateX(100%); /* Hidden by default */
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Sidebar Links */
+#sidebar ul li a {
+    color: #ff7f50; /* Coral for links */
+    font-size: 1.2rem;
+    text-decoration: none;
+}
+
+#sidebar ul li a:hover {
+    color: #ffd700; /* Golden hover effect */
+}
+
+/* Hamburger Menu */
+#menu-button {
+    background: none;
+    border: none;
+    color: #ff7f50; /* Coral color */
+    cursor: pointer;
+}
+
+/* Close Sidebar Button */
+#close-sidebar {
+    color: #ff7f50; /* Coral color for close button */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Responsive Styling */
+@media (min-width: 768px) {
+    #sidebar {
+        display: none; /* Hide sidebar on larger screens */
+    }
+
+    #menu-button {
+        display: none; /* Hide hamburger menu on larger screens */
+    }
+}
+
+
+/* General Styling for Main Section */
+main {
+    margin-top: 5rem; /* Space below the navbar */
+    padding: 2rem;
+    background-color: rgba(17, 0, 31, 1); /* Darker background for main section */
+    border-radius: 10px; /* Smooth corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Subtle shadow for a modern look */
+    color: #ffffff; /* White text color */
+    font-family: 'Outfit', sans-serif; /* Modern font family */
+}
+
+/* Headings Styling */
+main h1 {
+    font-size: 1.1rem;
+    color: #ff7f50; /* Coral color for standout titles */
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Text shadow for modern aesthetics */
+}
+
+/* Paragraph Styling */
+main p {
+    color: #dcdcdc; /* Softer white for paragraphs */
+    font-size: 1.2rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+/* Content Section */
+main article {
+    color: #f0f0f0; /* Light text color for readability */
+    font-size: 1.1rem;
+    line-height: 1.8;
+    border-left: 4px solid #ff7f50; /* Stylish vertical accent bar */
+    padding-left: 1rem;
+    margin-top: 1rem;
+}
+
+/* Image Styling */
+main img {
+    max-width: 50%;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Elegant shadow around images */
+}
+
+/* Links Styling */
+main a {
+    color: #ff7f50; /* Coral color for links */
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+main a:hover {
+    color: #ffd700; /* Golden hover effect */
+    text-decoration: underline;
+}
+
+/* Bento Grid Styling */
+.grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.md\\:grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 768px) {
+    .md\\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Blog List Styles */
+.blog-list {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.blog-card {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.blog-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.blog-card h2 {
+    font-size: 1.8rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.blog-card h2 a:hover {
+    color: #0056b3;
+}
+
+.blog-card p {
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+/* Blog Detail Styles */
+.prose {
+    color: #f0f0f0;
+    line-height: 1.8;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+    color: #ff7f50;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+.prose p {
+    margin-bottom: 1.5em;
+}
+
+.prose a {
+    color: #ff7f50;
+    text-decoration: underline;
+}
+
+.prose a:hover {
+    color: #ffd700;
+}
+
+.prose ul,
+.prose ol {
+    margin-left: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.prose code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.prose pre {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 1.5em 0;
+}
+
+.blog-detail {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.blog-detail img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.blog-detail h1 {
+    font-size: 2.4rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.blog-detail p {
+    color: #555;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Button Styles */
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-top: 15px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .blog-list,
+    .blog-detail {
+        padding: 15px;
+    }
+
+    .blog-card {
+        margin-bottom: 20px;
+    }
+
+    .blog-card img {
+        border-radius: 5px;
+    }
+
+    .blog-card h2 {
+        font-size: 1.5rem;
+    }
+
+    .blog-detail h1 {
+        font-size: 2rem;
+    }
+
+    .blog-detail p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .blog-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .blog-detail h1 {
+        font-size: 1.8rem;
+    }
+}
+
+
+/* Categories Grid Styling */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.category-item:hover {
+    background: rgba(255, 127, 80, 0.2);
+    transform: translateY(-2px);
+    border-color: #ff7f50;
+}
+
+.category-item.active {
+    background: rgba(255, 127, 80, 0.3);
+    border-color: #ff7f50;
+}
+
+.category-item i {
+    font-size: 1.5rem;
+    color: #ff7f50;
+    margin-bottom: 0.5rem;
+}
+
+.category-item span {
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.category-item .count {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 640px) {
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .category-item {
+        padding: 0.75rem;
+    }
+
+    .category-item i {
+        font-size: 1.25rem;
+    }
+}
+
+
+/* Categories Styling */
+/* Modern Category Navigation */
+/* Search Bar Styling */
+.search-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 127, 80, 0.2);
+    background: rgba(17, 0, 31, 0.8);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.search-button {
+    padding: 0.75rem 1.5rem;
+    background: #ff7f50;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Categories Container */
+.categories-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    overflow: hidden;
+}
+
+.categories-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.topic-btn {
+    flex: 0 1 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(17, 0, 31, 0.8);
+    border: 1px solid #ff7f50;
+    border-radius: 20px;
+    color: #ff7f50;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-container {
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+    
+    .categories-wrapper {
+        gap: 0.75rem;
+    }
+    
+    .topic-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-form {
+        flex-direction: column;
+    }
+    
+    .search-button {
+        width: 100%;
+    }
+    
+    .categories-wrapper {
+        gap: 0.5rem;
+    }
+    
+    .topic-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+        flex: 1 1 calc(50% - 0.5rem);
+        justify-content: center;
+    }
+}
+.topic-btn:hover {
+    background: rgba(255, 127, 80, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 127, 80, 0.2);
+}
+
+.topic-btn.active {
+    background: linear-gradient(45deg, #ff7f50, #ff6b3d);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(255, 127, 80, 0.3);
+}
+
+.topic-btn i {
+    font-size: 1rem;
+}
+
+.topic-btn:hover {
+    background: rgba(255, 127, 80, 0.2);
+    transform: translateY(-2px);
+}
+
+.topic-btn.active {
+    background: #ff7f50;
+    color: white;
+}
+
+.nav-arrow {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 127, 80, 0.1);
+    border: 1px solid rgba(255, 127, 80, 0.2);
+    border-radius: 50%;
+    color: #ff7f50;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-arrow:hover {
+    background: rgba(255, 127, 80, 0.2);
+    transform: scale(1.1);
+}
+
+@media (max-width: 640px) {
+    .topic-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .topic-btn i {
+        font-size: 0.9rem;
+    }
+}
+
+
+/* Comment Section Styling */
+.comment-section {
+    background: linear-gradient(to bottom right, rgba(255, 127, 80, 0.05), rgba(255, 127, 80, 0.02));
+}
+
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+    backdrop-filter: blur(8px);
+}
+
+.comment-card {
+    transition: all 0.3s ease;
+}
+
+.comment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 127, 80, 0.1);
+}
+
+/* Glassmorphism effects */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-effect:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 127, 80, 0.2);
+}

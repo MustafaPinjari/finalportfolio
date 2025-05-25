@@ -1,0 +1,1046 @@
+{% extends 'admin/custom_admin.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block admin_content %}
+<div class="bg-gray-900/30 rounded-lg shadow-lg border border-gray-800 mb-8">
+    <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
+        <div>
+            <h3 class="text-xl font-semibold text-white">Admin Settings</h3>
+            <p class="mt-1 text-sm text-gray-400">Configure your admin panel settings</p>
+        </div>
+    </div>
+    
+    <div class="p-6 space-y-6">
+        {% if backup_message %}
+        <div class="{% if backup_message.type == 'success' %}bg-green-800/30 border-green-700/50{% else %}bg-red-800/30 border-red-700/50{% endif %} rounded-lg p-4 border mb-4">
+            <p class="text-{% if backup_message.type == 'success' %}green{% else %}red{% endif %}-400">{{ backup_message.text }}</p>
+        </div>
+        {% endif %}
+        
+        {% if restore_message %}
+        <div class="{% if restore_message.type == 'success' %}bg-green-800/30 border-green-700/50{% else %}bg-red-800/30 border-red-700/50{% endif %} rounded-lg p-4 border mb-4">
+            <p class="text-{% if restore_message.type == 'success' %}green{% else %}red{% endif %}-400">{{ restore_message.text }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Backup & Restore Section -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">Backup & Restore</h4>
+            
+            {% if backup_app_missing %}
+                <div class="bg-yellow-800/30 rounded-lg p-4 border border-yellow-700/50 mb-4">
+                    <p class="text-yellow-400">Backup functionality is not fully configured. Please ensure the backup app is properly installed.</p>
+                </div>
+            {% else %}
+                <!-- Backup Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" data-backup-stats>
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                        <p class="text-sm text-gray-400">Total Backups</p>
+                        <h5 class="text-2xl font-bold mt-2 text-white">{{ backup_stats.total_backups }}</h5>
+                    </div>
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                        <p class="text-sm text-gray-400">Successful Backups</p>
+                        <h5 class="text-2xl font-bold mt-2 text-white">{{ backup_stats.successful_backups }}</h5>
+                    </div>
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                        <p class="text-sm text-gray-400">Total Size</p>
+                        <h5 class="text-2xl font-bold mt-2 text-white">{{ backup_stats.total_size_mb }} MB</h5>
+                    </div>
+                </div>
+                
+                <!-- Backup Controls -->
+                <div class="border-t border-gray-700 pt-4 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h5 class="text-md font-medium text-white">Backup Controls</h5>
+                    </div>
+                    
+                    <!-- Create Backup Form -->
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50 mb-4">
+                        <h6 class="text-sm font-medium text-white mb-3">Create New Backup</h6>
+                        <form method="POST" class="space-y-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="create_backup" value="1">
+                            <div>
+                                <label for="id_note" class="block text-sm font-medium text-gray-400">Note</label>
+                                <textarea name="note" id="id_note" rows="2" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Optional note about this backup"></textarea>
+                            </div>
+                            <div class="flex space-x-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="include_media" id="id_include_media" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20" checked>
+                                    <label for="id_include_media" class="ml-2 text-sm text-gray-400">Include Media</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="include_static" id="id_include_static" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20">
+                                    <label for="id_include_static" class="ml-2 text-sm text-gray-400">Include Static</label>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-3 py-1 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity text-sm">Create Backup</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Import Backup Form -->
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50 mb-4">
+                        <h6 class="text-sm font-medium text-white mb-3">Import Backup</h6>
+                        <form method="POST" enctype="multipart/form-data" class="space-y-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="import_backup" value="1">
+                            <div>
+                                <label for="id_backup_file" class="block text-sm font-medium text-gray-400">Backup File</label>
+                                <input type="file" name="backup_file" id="id_backup_file" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" accept=".zip">
+                                <p class="text-xs text-gray-500 mt-1">Upload a .zip backup file</p>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-3 py-1 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity text-sm">Import</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Recent Backups -->
+                <div class="border-t border-gray-700 pt-4 mb-6">
+                    <h5 class="text-md font-medium text-white mb-4">Recent Backups</h5>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Size</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-800/20 divide-y divide-gray-700">
+                                {% for backup in backups %}
+                                <tr data-backup-id="{{ backup.id }}">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ backup.filename }}
+                                        {% if backup.note %}
+                                        <p class="text-xs text-gray-500 mt-1">{{ backup.note|truncatechars:50 }}</p>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ backup.created_at|date:'M d, Y H:i' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 backup-size">
+                                        {% if backup.size %}
+                                        {{ backup.size|filesizeformat }}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="backup-status px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if backup.status == 'completed' %}bg-green-900/50 text-green-300{% elif backup.status == 'failed' %}bg-red-900/50 text-red-300{% else %}bg-yellow-900/50 text-yellow-300{% endif %}">
+                                            {{ backup.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 backup-actions">
+                                        <div class="flex space-x-2">
+                                            {% if backup.status == 'completed' %}
+                                            <button type="button" data-backup-id="{{ backup.id }}" class="create-restore-btn px-2 py-1 bg-blue-700/70 text-white rounded hover:bg-blue-600 transition-colors text-xs">Restore</button>
+                                            <a href="/backup/backups/{{ backup.id }}/download/" class="px-2 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors text-xs">Download</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-400">No backups available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Restore Points -->
+                <div class="border-t border-gray-700 pt-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h5 class="text-md font-medium text-white">Restore Points</h5>
+                    </div>
+                    
+                    <!-- Create Restore Point Form -->
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50 mb-4">
+                        <h6 class="text-sm font-medium text-white mb-3">Create Restore Point</h6>
+                        <form method="POST" class="space-y-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="create_restore_point" value="1">
+                            <div>
+                                <label for="id_backup" class="block text-sm font-medium text-gray-400">Backup</label>
+                                <select name="backup" id="id_backup" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                                    {% for backup in backups %}
+                                    <option value="{{ backup.id }}">{{ backup.filename }} ({{ backup.created_at|date:'Y-m-d H:i' }})</option>
+                                    {% empty %}
+                                    <option value="">No backups available</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="id_name" class="block text-sm font-medium text-gray-400">Name</label>
+                                <input type="text" name="name" id="id_name" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Restore point name">
+                            </div>
+                            <div>
+                                <label for="id_note" class="block text-sm font-medium text-gray-400">Note</label>
+                                <textarea name="note" id="id_note" rows="3" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Optional note about this restore point"></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="px-3 py-1 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity text-sm">Create</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Created</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Backup</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-800/20 divide-y divide-gray-700">
+                                {% for restore in restore_points %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ restore.name }}
+                                        {% if restore.description %}
+                                        <p class="text-xs text-gray-500 mt-1">{{ restore.description|truncatechars:50 }}</p>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ restore.created_at|date:'M d, Y H:i' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ restore.backup_file.filename|truncatechars:30 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if restore.status == 'completed' %}bg-green-900/50 text-green-300{% elif restore.status == 'failed' %}bg-red-900/50 text-red-300{% elif restore.status == 'restoring' %}bg-blue-900/50 text-blue-300{% else %}bg-yellow-900/50 text-yellow-300{% endif %}">
+                                            {{ restore.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {% if restore.status == 'pending' %}
+                                        <button type="button" data-restore-id="{{ restore.id }}" class="execute-restore-btn px-2 py-1 bg-blue-700/70 text-white rounded hover:bg-blue-600 transition-colors text-xs">Execute Restore</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-400">No restore points available.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Backup Schedule -->
+                <div class="border-t border-gray-700 pt-4 mt-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h5 class="text-md font-medium text-white">Backup Schedule</h5>
+                        <button type="button" id="create-schedule-btn" class="px-3 py-1 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors text-sm">Add Schedule</button>
+                    </div>
+                    
+                    <!-- Create Schedule Form (hidden by default) -->
+                    <div id="create-schedule-form" class="hidden bg-gray-900/30 rounded-lg p-4 border border-gray-700/50 mb-4">
+                        <h6 class="text-sm font-medium text-white mb-3">Create Backup Schedule</h6>
+                        <form method="POST" class="space-y-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="save_schedule" value="1">
+                            <div>
+                                <label for="id_name" class="block text-sm font-medium text-gray-400">Name</label>
+                                <input type="text" name="name" id="id_name" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Schedule name">
+                            </div>
+                            <div>
+                                <label for="id_frequency" class="block text-sm font-medium text-gray-400">Frequency</label>
+                                <select name="frequency" id="id_frequency" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="id_time" class="block text-sm font-medium text-gray-400">Time</label>
+                                <input type="text" name="time" id="id_time" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="00:00">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div id="day-of-week-container">
+                                    <label for="id_day_of_week" class="block text-sm font-medium text-gray-400">Day of Week</label>
+                                    <select name="day_of_week" id="id_day_of_week" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                                        <option value="1">Monday</option>
+                                        <option value="2">Tuesday</option>
+                                        <option value="3">Wednesday</option>
+                                        <option value="4">Thursday</option>
+                                        <option value="5">Friday</option>
+                                        <option value="6">Saturday</option>
+                                        <option value="0">Sunday</option>
+                                    </select>
+                                </div>
+                                <div id="day-of-month-container">
+                                    <label for="id_day_of_month" class="block text-sm font-medium text-gray-400">Day of Month</label>
+                                    <select name="day_of_month" id="id_day_of_month" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                                        {% for i in '12345678910111213141516171819202122232425262728293031' %}
+                                        <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="id_retention_count" class="block text-sm font-medium text-gray-400">Retention Count</label>
+                                <input type="number" name="retention_count" id="id_retention_count" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" value="5" min="0" max="30">
+                                <p class="mt-1 text-xs text-gray-500">Number of backups to keep (0 = keep all)</p>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" name="enabled" id="id_enabled" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20" checked>
+                                <label for="id_enabled" class="ml-2 text-sm text-gray-400">Enabled</label>
+                            </div>
+                            <div class="flex justify-end space-x-2">
+                                <button type="button" id="cancel-schedule-btn" class="px-3 py-1 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors text-sm">Cancel</button>
+                                <button type="submit" class="px-3 py-1 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity text-sm">Save Schedule</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Frequency</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-800/20 divide-y divide-gray-700">
+                                {% for schedule in schedules %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ schedule.name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ schedule.get_frequency_display }}
+                                        {% if schedule.frequency == 'weekly' and schedule.day_of_week is not None %}
+                                        ({{ schedule.get_day_of_week_display }})
+                                        {% elif schedule.frequency == 'monthly' and schedule.day_of_month is not None %}
+                                        (Day {{ schedule.day_of_month }})
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        {{ schedule.time|time:'H:i' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if schedule.enabled %}bg-green-900/50 text-green-300{% else %}bg-gray-700 text-gray-300{% endif %}">
+                                            {{ schedule.enabled|yesno:'Enabled,Disabled' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                        <div class="flex space-x-2">
+                                            <button type="button" data-schedule-id="{{ schedule.id }}" class="edit-schedule-btn px-2 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors text-xs">Edit</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-400">No schedules configured.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- SEO Settings Section -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50 mb-6">
+            <h4 class="text-lg font-medium text-white mb-4">SEO Settings</h4>
+            <div class="border-b border-gray-700 pb-4 mb-4">
+                <h5 class="text-md font-medium text-white mb-3">SEO Overview</h5>
+                
+                <!-- SEO Score Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                        <p class="text-sm text-gray-400">Average SEO Score</p>
+                        <h5 class="text-2xl font-bold mt-2 text-white">{{ seo_stats.avg_score|default:'N/A' }}</h5>
+                    </div>
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                        <p class="text-sm text-gray-400">Pages Optimized</p>
+                        <h5 class="text-2xl font-bold mt-2 text-white">{{ seo_stats.optimized_pages|default:'0' }}</h5>
+                    </div>
+                    <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                        <p class="text-sm text-gray-400">Critical Issues</p>
+                        <h5 class="text-2xl font-bold mt-2 text-white">{{ seo_stats.critical_issues|default:'0' }}</h5>
+                    </div>
+                </div>
+                
+                <!-- Sitemap Configuration -->
+                <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50 mb-4">
+                    <h6 class="text-sm font-medium text-white mb-3">Sitemap Configuration</h6>
+                    <form method="POST" class="space-y-3" id="sitemap-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="save_sitemap" value="1">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" name="include_blog_posts" id="id_include_blog_posts" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20" {% if sitemap_config.include_blog_posts %}checked{% endif %}>
+                                    <label for="id_include_blog_posts" class="ml-2 text-sm text-gray-400">Include Blog Posts</label>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" name="include_pages" id="id_include_pages" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20" {% if sitemap_config.include_pages %}checked{% endif %}>
+                                    <label for="id_include_pages" class="ml-2 text-sm text-gray-400">Include Pages</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="include_categories" id="id_include_categories" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20" {% if sitemap_config.include_categories %}checked{% endif %}>
+                                    <label for="id_include_categories" class="ml-2 text-sm text-gray-400">Include Categories</label>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center mb-3">
+                                    <input type="checkbox" name="auto_ping_search_engines" id="id_auto_ping_search_engines" class="rounded bg-gray-700/30 border border-gray-600 text-[#b820e6] focus:ring-[#b820e6]/20" {% if sitemap_config.auto_ping_search_engines %}checked{% endif %}>
+                                    <label for="id_auto_ping_search_engines" class="ml-2 text-sm text-gray-400">Auto-ping Search Engines</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_blog_update_frequency" class="block text-xs text-gray-400">Blog Update Frequency</label>
+                                    <select name="blog_update_frequency" id="id_blog_update_frequency" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20 text-sm">
+                                        <option value="always" {% if sitemap_config.blog_update_frequency == 'always' %}selected{% endif %}>Always</option>
+                                        <option value="hourly" {% if sitemap_config.blog_update_frequency == 'hourly' %}selected{% endif %}>Hourly</option>
+                                        <option value="daily" {% if sitemap_config.blog_update_frequency == 'daily' %}selected{% endif %}>Daily</option>
+                                        <option value="weekly" {% if sitemap_config.blog_update_frequency == 'weekly' %}selected{% endif %}>Weekly</option>
+                                        <option value="monthly" {% if sitemap_config.blog_update_frequency == 'monthly' %}selected{% endif %}>Monthly</option>
+                                        <option value="yearly" {% if sitemap_config.blog_update_frequency == 'yearly' %}selected{% endif %}>Yearly</option>
+                                        <option value="never" {% if sitemap_config.blog_update_frequency == 'never' %}selected{% endif %}>Never</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-2">
+                            <button type="submit" name="generate" value="1" class="px-3 py-1 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity text-sm">Generate Sitemap</button>
+                            <button type="submit" class="px-3 py-1 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors text-sm">Save Settings</button>
+                        </div>
+                    </form>
+                    
+                    {% if sitemap_url %}
+                    <div class="mt-3 text-sm">
+                        <p class="text-gray-400">Sitemap URL: <a href="{{ sitemap_url }}" target="_blank" class="text-[#b820e6] hover:underline">{{ sitemap_url }}</a></p>
+                        <p class="text-gray-400 mt-1">Last generated: {{ sitemap_config.last_generated|default:'Never' }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Real-time SEO Checker -->
+            <div class="border-b border-gray-700 pb-4 mb-4">
+                <h5 class="text-md font-medium text-white mb-3">Real-time SEO Checker</h5>
+                <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                    <p class="text-sm text-gray-400 mb-3">Check your content for SEO optimization in real-time</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label for="seo_title" class="block text-sm font-medium text-gray-400">Page Title</label>
+                            <input type="text" id="seo_title" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Enter page title (50-60 characters ideal)">
+                            <p class="text-xs text-gray-500 mt-1"><span id="title_char_count">0</span>/60 characters</p>
+                        </div>
+                        
+                        <div>
+                            <label for="seo_description" class="block text-sm font-medium text-gray-400">Meta Description</label>
+                            <textarea id="seo_description" rows="2" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Enter meta description (120-160 characters ideal)"></textarea>
+                            <p class="text-xs text-gray-500 mt-1"><span id="desc_char_count">0</span>/160 characters</p>
+                        </div>
+                        
+                        <div>
+                            <label for="seo_keywords" class="block text-sm font-medium text-gray-400">Keywords</label>
+                            <input type="text" id="seo_keywords" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Enter comma-separated keywords">
+                        </div>
+                        
+                        <div>
+                            <label for="seo_content" class="block text-sm font-medium text-gray-400">Content Preview</label>
+                            <textarea id="seo_content" rows="4" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20" placeholder="Enter sample content to analyze"></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" id="check_seo_btn" class="px-3 py-1 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity text-sm">Check SEO</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Panel (initially hidden) -->
+                    <div id="seo_results" class="mt-4 hidden">
+                        <div class="border-t border-gray-700 pt-4">
+                            <h6 class="text-sm font-medium text-white mb-3">SEO Analysis Results</h6>
+                            
+                            <div class="flex items-center mb-3">
+                                <div class="w-full bg-gray-700 rounded-full h-2.5">
+                                    <div id="seo_score_bar" class="bg-gradient-to-r from-[#b820e6] to-[#da7d20] h-2.5 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="seo_score" class="ml-3 text-lg font-bold">0</span><span class="text-sm text-gray-400">/100</span>
+                            </div>
+                            
+                            <div id="seo_issues_list" class="space-y-2">
+                                <!-- Issues will be added here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Keyword Rankings -->
+            <div>
+                <h5 class="text-md font-medium text-white mb-3">Top Keywords</h5>
+                <div class="bg-gray-900/30 rounded-lg p-4 border border-gray-700/50">
+                    {% if top_keywords %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Keyword</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Usage Count</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Pages</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-900/20 divide-y divide-gray-700">
+                                {% for keyword in top_keywords %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ keyword.keyword }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ keyword.usage_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ keyword.pages_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        {% if keyword.is_primary %}
+                                        <span class="px-2 py-1 text-xs rounded-full bg-green-900/30 text-green-400">Primary</span>
+                                        {% else %}
+                                        <span class="px-2 py-1 text-xs rounded-full bg-blue-900/30 text-blue-400">Secondary</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-gray-400">No keywords tracked yet. Keywords will appear as you add them to your content.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Site Settings Section -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">Site Settings</h4>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="site_name" class="block text-sm font-medium text-gray-400">Site Name</label>
+                    <input type="text" name="site_name" id="site_name" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                </div>
+                <div>
+                    <label for="site_description" class="block text-sm font-medium text-gray-400">Site Description</label>
+                    <textarea name="site_description" id="site_description" rows="3" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <!-- Email Settings Section -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">Email Settings</h4>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="smtp_host" class="block text-sm font-medium text-gray-400">SMTP Host</label>
+                    <input type="text" name="smtp_host" id="smtp_host" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                </div>
+                <div>
+                    <label for="smtp_port" class="block text-sm font-medium text-gray-400">SMTP Port</label>
+                    <input type="number" name="smtp_port" id="smtp_port" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                </div>
+                <div>
+                    <label for="smtp_user" class="block text-sm font-medium text-gray-400">SMTP Username</label>
+                    <input type="text" name="smtp_user" id="smtp_user" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                </div>
+                <div>
+                    <label for="smtp_password" class="block text-sm font-medium text-gray-400">SMTP Password</label>
+                    <input type="password" name="smtp_password" id="smtp_password" class="mt-1 block w-full rounded-md bg-gray-700/30 border border-gray-600 text-white focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="px-4 py-2 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity">
+                        Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing backup controls');
+        
+        // Backup form controls
+        const createBackupBtn = document.querySelector('.bg-gradient-to-r.from-\[\#b820e6\].to-\[\#da7d20\]');
+        const createBackupForm = document.getElementById('create-backup-form');
+        const cancelBackupBtn = document.getElementById('cancel-backup-btn');
+        
+        // Import form controls
+        const importBackupBtn = document.getElementById('import-backup-btn');
+        const importBackupForm = document.getElementById('import-backup-form');
+        const cancelImportBtn = document.getElementById('cancel-import-btn');
+        
+        // Restore point form controls
+        const createRestoreBtn = document.getElementById('create-restore-btn');
+        const createRestoreForm = document.getElementById('create-restore-form');
+        const cancelRestoreBtn = document.getElementById('cancel-restore-btn');
+        
+        // Schedule form controls
+        const createScheduleBtn = document.getElementById('create-schedule-btn');
+        const createScheduleForm = document.getElementById('create-schedule-form');
+        const cancelScheduleBtn = document.getElementById('cancel-schedule-btn');
+        
+        console.log('Backup button found:', createBackupBtn);
+        console.log('Backup form found:', createBackupForm);
+        
+        // Helper to hide all forms
+        function hideAllForms() {
+            if (createBackupForm) createBackupForm.classList.add('hidden');
+            if (importBackupForm) importBackupForm.classList.add('hidden');
+            if (createRestoreForm) createRestoreForm.classList.add('hidden');
+            if (createScheduleForm) createScheduleForm.classList.add('hidden');
+        }
+        
+        // Backup form toggle - using direct selector
+        document.querySelectorAll('.new-backup-btn, #create-backup-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                console.log('New backup button clicked');
+                hideAllForms();
+                if (createBackupForm) {
+                    createBackupForm.classList.remove('hidden');
+                } else {
+                    console.error('Backup form element not found');
+                }
+            });
+        });
+            
+        if (cancelBackupBtn) {
+            cancelBackupBtn.addEventListener('click', function() {
+                if (createBackupForm) {
+                    createBackupForm.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Import form toggle
+        if (importBackupBtn && importBackupForm && cancelImportBtn) {
+            importBackupBtn.addEventListener('click', function() {
+                hideAllForms();
+                importBackupForm.classList.remove('hidden');
+            });
+            
+            cancelImportBtn.addEventListener('click', function() {
+                importBackupForm.classList.add('hidden');
+            });
+        }
+        
+        // Restore form toggle
+        if (createRestoreBtn && createRestoreForm && cancelRestoreBtn) {
+            createRestoreBtn.addEventListener('click', function() {
+                hideAllForms();
+                createRestoreForm.classList.remove('hidden');
+            });
+            
+            cancelRestoreBtn.addEventListener('click', function() {
+                createRestoreForm.classList.add('hidden');
+            });
+        }
+        
+        // Schedule form toggle
+        if (createScheduleBtn && createScheduleForm && cancelScheduleBtn) {
+            createScheduleBtn.addEventListener('click', function() {
+                hideAllForms();
+                createScheduleForm.classList.remove('hidden');
+            });
+            
+            cancelScheduleBtn.addEventListener('click', function() {
+                createScheduleForm.classList.add('hidden');
+            });
+        }
+        
+        // Frequency dependent fields for schedule form
+        const frequencySelect = document.getElementById('id_frequency');
+        const dayOfWeekContainer = document.getElementById('day-of-week-container');
+        const dayOfMonthContainer = document.getElementById('day-of-month-container');
+        
+        if (frequencySelect && dayOfWeekContainer && dayOfMonthContainer) {
+            function updateFrequencyFields() {
+                const frequency = frequencySelect.value;
+                
+                // Hide both by default
+                dayOfWeekContainer.classList.add('hidden');
+                dayOfMonthContainer.classList.add('hidden');
+                
+                if (frequency === 'weekly') {
+                    dayOfWeekContainer.classList.remove('hidden');
+                } else if (frequency === 'monthly') {
+                    dayOfMonthContainer.classList.remove('hidden');
+                }
+            }
+            
+            // Initial state
+            updateFrequencyFields();
+            
+            // On change
+            frequencySelect.addEventListener('change', updateFrequencyFields);
+        }
+        
+        // Buttons for create restore from backup
+        const createRestoreButtons = document.querySelectorAll('.create-restore-btn[data-backup-id]');
+        if (createRestoreButtons.length > 0 && createRestoreForm) {
+            createRestoreButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const backupId = this.getAttribute('data-backup-id');
+                    const backupFileSelect = document.getElementById('id_backup_file');
+                    
+                    if (backupFileSelect) {
+                        // Find and select the option with the matching value
+                        for (let i = 0; i < backupFileSelect.options.length; i++) {
+                            if (backupFileSelect.options[i].value === backupId) {
+                                backupFileSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    hideAllForms();
+                    createRestoreForm.classList.remove('hidden');
+                });
+            });
+        }
+        
+        // Execute restore confirmation
+        const executeRestoreButtons = document.querySelectorAll('.execute-restore-btn[data-restore-id]');
+        if (executeRestoreButtons.length > 0) {
+            executeRestoreButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const restoreId = this.getAttribute('data-restore-id');
+                    if (confirm('Are you sure you want to execute this restore? This will replace your current database.')) {
+                        // Create and submit the form
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.style.display = 'none';
+                        
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = 'csrfmiddlewaretoken';
+                        csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                        form.appendChild(csrfInput);
+                        
+                        const executeInput = document.createElement('input');
+                        executeInput.type = 'hidden';
+                        executeInput.name = 'execute_restore';
+                        executeInput.value = '1';
+                        form.appendChild(executeInput);
+                        
+                        const restoreIdInput = document.createElement('input');
+                        restoreIdInput.type = 'hidden';
+                        restoreIdInput.name = 'restore_id';
+                        restoreIdInput.value = restoreId;
+                        form.appendChild(restoreIdInput);
+                        
+                        const confirmInput = document.createElement('input');
+                        confirmInput.type = 'hidden';
+                        confirmInput.name = 'confirm_restore';
+                        confirmInput.value = 'confirm';
+                        form.appendChild(confirmInput);
+                        
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        }
+        
+        // Edit schedule functionality
+        const editScheduleButtons = document.querySelectorAll('.edit-schedule-btn[data-schedule-id]');
+        if (editScheduleButtons.length > 0 && createScheduleForm) {
+            editScheduleButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const scheduleId = this.getAttribute('data-schedule-id');
+                    // Fetch schedule data and populate the form
+                    fetch(`/backup/schedules/${scheduleId}/edit/?format=json`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add schedule ID to form
+                            const scheduleIdInput = document.createElement('input');
+                            scheduleIdInput.type = 'hidden';
+                            scheduleIdInput.name = 'schedule_id';
+                            scheduleIdInput.value = scheduleId;
+                            createScheduleForm.querySelector('form').appendChild(scheduleIdInput);
+                            
+                            // Populate form fields
+                            createScheduleForm.querySelector('#id_name').value = data.name;
+                            createScheduleForm.querySelector('#id_frequency').value = data.frequency;
+                            createScheduleForm.querySelector('#id_time').value = data.time;
+                            createScheduleForm.querySelector('#id_retention_count').value = data.retention_count;
+                            createScheduleForm.querySelector('#id_enabled').checked = data.enabled;
+                            
+                            if (data.day_of_week !== null) {
+                                createScheduleForm.querySelector('#id_day_of_week').value = data.day_of_week;
+                            }
+                            
+                            if (data.day_of_month !== null) {
+                                createScheduleForm.querySelector('#id_day_of_month').value = data.day_of_month;
+                            }
+                            
+                            // Update visibility of day fields
+                            updateFrequencyFields();
+                            
+                            // Show form
+                            hideAllForms();
+                            createScheduleForm.classList.remove('hidden');
+                        })
+                        .catch(error => {
+                            console.error('Error fetching schedule data:', error);
+                            alert('Error loading schedule data. Please try again.');
+                        });
+                });
+            });
+        }
+    });
+    
+    // WebSocket connection for real-time updates
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only initialize if we have the backup section
+        if (!document.querySelector('[data-backup-stats]')) {
+            return;
+        }
+        
+        const backupSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/backup/'
+        );
+        
+        backupSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log('Backup WebSocket message:', data);
+            
+            if (data.type === 'backup_status') {
+                // Update backup status in the table
+                const backupRow = document.querySelector(`[data-backup-id="${data.backup_id}"]`);
+                if (backupRow) {
+                    const statusCell = backupRow.querySelector('.backup-status');
+                    if (statusCell) {
+                        // Update status text
+                        statusCell.textContent = data.status;
+                        
+                        // Update status class
+                        statusCell.className = 'backup-status px-2 inline-flex text-xs leading-5 font-semibold rounded-full';
+                        if (data.status === 'completed') {
+                            statusCell.classList.add('bg-green-900/50', 'text-green-300');
+                        } else if (data.status === 'failed') {
+                            statusCell.classList.add('bg-red-900/50', 'text-red-300');
+                        } else {
+                            statusCell.classList.add('bg-yellow-900/50', 'text-yellow-300');
+                        }
+                    }
+                    
+                    // If completed, update size and show action buttons
+                    if (data.status === 'completed' && data.size) {
+                        const sizeCell = backupRow.querySelector('.backup-size');
+                        if (sizeCell) {
+                            sizeCell.textContent = (data.size / (1024 * 1024)).toFixed(2) + ' MB';
+                        }
+                        
+                        const actionsCell = backupRow.querySelector('.backup-actions');
+                        if (actionsCell) {
+                            actionsCell.innerHTML = `
+                                <div class="flex space-x-2">
+                                    <button type="button" data-backup-id="${data.backup_id}" class="create-restore-btn px-2 py-1 bg-blue-700/70 text-white rounded hover:bg-blue-600 transition-colors text-xs">Restore</button>
+                                    <a href="#" onclick="event.preventDefault(); document.getElementById('download-form-${data.backup_id}').submit();" class="px-2 py-1 bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors text-xs">Download</a>
+                                    <form id="download-form-${data.backup_id}" action="/backup/backups/${data.backup_id}/download/" method="GET" class="hidden"></form>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+            } else if (data.type === 'restore_status') {
+                // Update restore status in the table
+                const restoreRow = document.querySelector(`[data-restore-id="${data.restore_id}"]`);
+                if (restoreRow) {
+                    const statusCell = restoreRow.querySelector('.restore-status');
+                    if (statusCell) {
+                        // Update status text
+                        statusCell.textContent = data.status;
+                        
+                        // Update status class
+                        statusCell.className = 'restore-status px-2 inline-flex text-xs leading-5 font-semibold rounded-full';
+                        if (data.status === 'completed') {
+                            statusCell.classList.add('bg-green-900/50', 'text-green-300');
+                        } else if (data.status === 'failed') {
+                            statusCell.classList.add('bg-red-900/50', 'text-red-300');
+                        } else if (data.status === 'restoring') {
+                            statusCell.classList.add('bg-blue-900/50', 'text-blue-300');
+                        } else {
+                            statusCell.classList.add('bg-yellow-900/50', 'text-yellow-300');
+                        }
+                    }
+                    
+                    // Remove restore button if status is not pending
+                    if (data.status !== 'pending') {
+                        const actionsCell = restoreRow.querySelector('.restore-actions');
+                        if (actionsCell) {
+                            actionsCell.innerHTML = '';
+                        }
+                    }
+                }
+            }
+        };
+        
+        backupSocket.onclose = function(e) {
+            console.error('Backup WebSocket closed unexpectedly');
+        };
+    });
+    
+    // SEO Checker Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const seoTitle = document.getElementById('seo_title');
+        const seoDescription = document.getElementById('seo_description');
+        const seoKeywords = document.getElementById('seo_keywords');
+        const seoContent = document.getElementById('seo_content');
+        const checkSeoBtn = document.getElementById('check_seo_btn');
+        const seoResults = document.getElementById('seo_results');
+        const seoScoreBar = document.getElementById('seo_score_bar');
+        const seoScore = document.getElementById('seo_score');
+        const seoIssuesList = document.getElementById('seo_issues_list');
+        const titleCharCount = document.getElementById('title_char_count');
+        const descCharCount = document.getElementById('desc_char_count');
+        
+        // Update character counts
+        if (seoTitle) {
+            seoTitle.addEventListener('input', function() {
+                titleCharCount.textContent = this.value.length;
+                // Add visual feedback
+                if (this.value.length > 60) {
+                    titleCharCount.classList.add('text-red-400');
+                } else if (this.value.length < 30) {
+                    titleCharCount.classList.add('text-yellow-400');
+                    titleCharCount.classList.remove('text-red-400');
+                } else {
+                    titleCharCount.classList.add('text-green-400');
+                    titleCharCount.classList.remove('text-yellow-400', 'text-red-400');
+                }
+            });
+        }
+        
+        if (seoDescription) {
+            seoDescription.addEventListener('input', function() {
+                descCharCount.textContent = this.value.length;
+                // Add visual feedback
+                if (this.value.length > 160) {
+                    descCharCount.classList.add('text-red-400');
+                } else if (this.value.length < 80) {
+                    descCharCount.classList.add('text-yellow-400');
+                    descCharCount.classList.remove('text-red-400');
+                } else {
+                    descCharCount.classList.add('text-green-400');
+                    descCharCount.classList.remove('text-yellow-400', 'text-red-400');
+                }
+            });
+        }
+        
+        // SEO Check Button
+        if (checkSeoBtn) {
+            checkSeoBtn.addEventListener('click', function() {
+                // Get form values
+                const title = seoTitle.value;
+                const description = seoDescription.value;
+                const keywords = seoKeywords.value;
+                const content = seoContent.value;
+                
+                // Prepare form data for AJAX
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('description', description);
+                formData.append('keywords', keywords);
+                formData.append('content', content);
+                
+                // Send AJAX request
+                fetch('/seo/admin/seo/check/', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show results panel
+                    seoResults.classList.remove('hidden');
+                    
+                    // Update score
+                    seoScore.textContent = data.score;
+                    seoScoreBar.style.width = `${data.score}%`;
+                    
+                    // Set color based on score
+                    if (data.color === 'success') {
+                        seoScoreBar.classList.remove('from-red-500', 'to-yellow-500');
+                        seoScoreBar.classList.add('from-[#b820e6]', 'to-[#da7d20]');
+                        seoScore.classList.remove('text-red-400', 'text-yellow-400');
+                        seoScore.classList.add('text-[#b820e6]');
+                    } else if (data.color === 'warning') {
+                        seoScoreBar.classList.remove('from-[#b820e6]', 'to-[#da7d20]', 'from-red-500', 'to-red-500');
+                        seoScoreBar.classList.add('from-yellow-500', 'to-yellow-500');
+                        seoScore.classList.remove('text-[#b820e6]', 'text-red-400');
+                        seoScore.classList.add('text-yellow-400');
+                    } else {
+                        seoScoreBar.classList.remove('from-[#b820e6]', 'to-[#da7d20]', 'from-yellow-500', 'to-yellow-500');
+                        seoScoreBar.classList.add('from-red-500', 'to-red-500');
+                        seoScore.classList.remove('text-[#b820e6]', 'text-yellow-400');
+                        seoScore.classList.add('text-red-400');
+                    }
+                    
+                    // Clear and populate issues list
+                    seoIssuesList.innerHTML = '';
+                    if (data.issues.length === 0) {
+                        const noIssues = document.createElement('p');
+                        noIssues.className = 'text-green-400 text-sm';
+                        noIssues.textContent = 'No issues found! Your content looks great.';
+                        seoIssuesList.appendChild(noIssues);
+                    } else {
+                        data.issues.forEach(issue => {
+                            const issueItem = document.createElement('div');
+                            issueItem.className = 'flex items-start space-x-2 p-2 rounded bg-gray-800/30';
+                            
+                            let severityColor = 'text-yellow-400';
+                            if (issue.severity === 'high' || issue.severity === 'critical') {
+                                severityColor = 'text-red-400';
+                            } else if (issue.severity === 'low') {
+                                severityColor = 'text-blue-400';
+                            }
+                            
+                            issueItem.innerHTML = `
+                                <span class="${severityColor} text-lg">•</span>
+                                <div>
+                                    <p class="text-sm ${severityColor}">${issue.message}</p>
+                                </div>
+                            `;
+                            
+                            seoIssuesList.appendChild(issueItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while analyzing SEO. Please try again.');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

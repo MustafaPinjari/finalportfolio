@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="mb-5 w-full scroll-mt-20 px-[12%] py-10 pt-32 font-ovo">
+    <div class="container mx-auto max-w-4xl">
+        <h2 class="mb-8 text-center text-3xl font-semibold">Your Favorite Posts</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 rounded-lg bg-green-100 p-4 text-green-700 dark:bg-green-900 dark:text-green-200">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <!-- Sidebar Navigation -->
+            <div class="rounded-lg bg-white p-6 shadow-md dark:bg-darkHover">
+                <div class="flex items-center space-x-4 border-b border-gray-200 pb-4 dark:border-gray-700">
+                    {% if user.profile.profile_picture %}
+                        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" 
+                             class="h-16 w-16 rounded-full object-cover">
+                    {% else %}
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-2xl font-bold text-white">
+                            {{ user.username.0|upper }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="text-lg font-medium">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Member since {{ user.date_joined|date:"F Y" }}</p>
+                    </div>
+                </div>
+                
+                <nav class="mt-4">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'profile' %}" class="block rounded-lg p-3 font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                                Profile Settings
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'favorite_posts' %}" class="block rounded-lg bg-gray-100 p-3 font-medium text-gray-900 dark:bg-gray-800 dark:text-white">
+                                Favorite Posts
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'logout' %}" class="block rounded-lg p-3 font-medium text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-800">
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <div class="rounded-lg bg-white p-6 shadow-md dark:bg-darkHover">
+                    <h3 class="mb-4 text-xl font-semibold">All Favorite Posts</h3>
+                    
+                    {% if favorite_posts %}
+                        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                            {% for post in favorite_posts %}
+                                <div class="py-4">
+                                    <div class="flex justify-between">
+                                        <a href="{% url 'blog:blog_detail' post.slug %}" class="block hover:opacity-75">
+                                            <h4 class="text-lg font-medium">{{ post.title }}</h4>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                                {{ post.created_at|date:"F j, Y" }} • {{ post.category.name }}
+                                            </p>
+                                        </a>
+                                        <button 
+                                            class="remove-favorite text-gray-400 hover:text-red-500 focus:outline-none"
+                                            data-post-id="{{ post.id }}"
+                                            title="Remove from favorites">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <p class="mt-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
+                                        {{ post.content|striptags|truncatewords:30 }}
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="rounded-lg bg-gray-50 p-8 text-center dark:bg-gray-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">No favorite posts yet</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">You haven't saved any blog posts as favorites.</p>
+                            <div class="mt-6">
+                                <a href="{% url 'blog:blog_list' %}" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+                                    Browse Blog Posts
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for removing favorites -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        document.querySelectorAll('.remove-favorite').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const postElement = this.closest('div.py-4');
+                
+                fetch(`/users/toggle-favorite/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Remove the post from the list with animation
+                        postElement.style.transition = 'opacity 0.3s ease-out';
+                        postElement.style.opacity = '0';
+                        setTimeout(() => {
+                            postElement.remove();
+                            
+                            // If no more favorites, show empty state
+                            if (document.querySelectorAll('.py-4').length === 0) {
+                                location.reload();
+                            }
+                        }, 300);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %}

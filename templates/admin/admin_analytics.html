@@ -1,0 +1,724 @@
+{% extends 'admin/custom_admin.html' %}
+{% load static %}
+
+{% block admin_content %}
+<div class="bg-gray-900/30 rounded-lg shadow-lg border border-gray-800 mb-8">
+    <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
+        <div>
+            <h3 class="text-xl font-semibold text-white">Analytics Dashboard</h3>
+            <p class="mt-1 text-sm text-gray-400">Real-time site analytics and statistics</p>
+        </div>
+        <div class="flex space-x-4">
+            <select id="timeRange" class="bg-gray-700/30 border border-gray-600 text-white rounded-md focus:border-[#b820e6] focus:ring focus:ring-[#b820e6]/20">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+            </select>
+            <button id="refreshData" class="px-4 py-2 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-md hover:opacity-90 transition-opacity flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh Data
+            </button>
+        </div>
+    </div>
+    
+    <!-- Real-time stats overview -->
+    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div id="views-card" class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50 hover:border-[#b820e6]/50 transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400">Total Views</p>
+                    <h3 class="text-2xl font-bold mt-2 total-views">{{ stats.total_views }}</h3>
+                </div>
+                <div class="bg-gradient-to-br from-[#b820e6]/20 to-[#da7d20]/20 p-3 rounded-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-gray-400">
+                <span id="views-trend" class="text-green-400 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                    <span id="views-percent">0%</span>
+                </span>
+                <span class="ml-2">vs previous period</span>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50 hover:border-[#b820e6]/50 transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400">Active Users</p>
+                    <h3 class="text-2xl font-bold mt-2">{{ stats.active_users }}</h3>
+                </div>
+                <div class="bg-gradient-to-br from-[#b820e6]/20 to-[#da7d20]/20 p-3 rounded-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-gray-400">
+                <span id="users-trend" class="text-green-400 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                    <span id="users-percent">0%</span>
+                </span>
+                <span class="ml-2">vs previous period</span>
+            </div>
+        </div>
+        
+        <div id="comments-card" class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50 hover:border-[#b820e6]/50 transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400">Comments</p>
+                    <h3 class="text-2xl font-bold mt-2 total-comments">{{ stats.total_comments }}</h3>
+                </div>
+                <div class="bg-gradient-to-br from-[#b820e6]/20 to-[#da7d20]/20 p-3 rounded-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-gray-400">
+                <span id="comments-trend" class="text-green-400 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                    <span id="comments-percent">0%</span>
+                </span>
+                <span class="ml-2">vs previous period</span>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50 hover:border-[#b820e6]/50 transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400">Online Now</p>
+                    <h3 class="text-2xl font-bold mt-2" id="online-now">0</h3>
+                </div>
+                <div class="bg-gradient-to-br from-[#b820e6]/20 to-[#da7d20]/20 p-3 rounded-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-xs text-gray-400">
+                <span class="text-blue-400">Real-time tracking</span>
+                <span class="ml-2 flex items-center">
+                    <span id="live-indicator" class="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse"></span>
+                    Live
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Post Views Chart -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">Post Views Over Time</h4>
+            <canvas id="postViewsChart"></canvas>
+        </div>
+        
+        <!-- User Registrations Chart -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">User Registration Trends</h4>
+            <canvas id="userRegistrationsChart"></canvas>
+        </div>
+        
+        <!-- Comment Activity Chart -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">Comment Activity</h4>
+            <canvas id="commentActivityChart"></canvas>
+        </div>
+        
+        <!-- Category Statistics Chart -->
+        <div class="bg-gray-800/30 rounded-lg p-6 border border-gray-700/50">
+            <h4 class="text-lg font-medium text-white mb-4">Category Popularity</h4>
+            <canvas id="categoryStatsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js and Moment.js for time formatting -->
+<style>
+    .flash-highlight {
+        animation: flash-animation 1s ease-out;
+    }
+    
+    @keyframes flash-animation {
+        0% { box-shadow: 0 0 0 0 rgba(184, 32, 230, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(184, 32, 230, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(184, 32, 230, 0); }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.1/dist/chartjs-adapter-moment.min.js"></script>
+
+<!-- Analytics JavaScript -->
+<script>
+    // Chart.js global configuration
+    Chart.defaults.color = '#9ca3af';  // Text color
+    Chart.defaults.borderColor = 'rgba(75, 85, 99, 0.2)';  // Grid lines
+    Chart.defaults.font.family = 'Outfit, system-ui, sans-serif';
+    
+    // Color palette for charts
+    const chartColors = {
+        primary: '#b820e6',
+        secondary: '#da7d20',
+        tertiary: '#4ade80',
+        quaternary: '#3b82f6',
+        background: 'rgba(30, 41, 59, 0.5)',
+        border: 'rgba(30, 41, 59, 0.8)'
+    };
+    
+    // Create gradient for charts
+    function createGradient(ctx, startColor, endColor) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, startColor);
+        gradient.addColorStop(1, endColor);
+        return gradient;
+    }
+    
+    // Initialize charts
+    const postViewsCtx = document.getElementById('postViewsChart').getContext('2d');
+    const userRegCtx = document.getElementById('userRegistrationsChart').getContext('2d');
+    const commentCtx = document.getElementById('commentActivityChart').getContext('2d');
+    const categoryCtx = document.getElementById('categoryStatsChart').getContext('2d');
+    
+    const postViewsGradient = createGradient(postViewsCtx, 'rgba(184, 32, 230, 0.5)', 'rgba(184, 32, 230, 0.0)');
+    const userRegGradient = createGradient(userRegCtx, 'rgba(218, 125, 32, 0.5)', 'rgba(218, 125, 32, 0.0)');
+    const commentGradient = createGradient(commentCtx, 'rgba(74, 222, 128, 0.5)', 'rgba(74, 222, 128, 0.0)');
+    
+    const charts = {
+        postViews: new Chart(postViewsCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Post Views',
+                    borderColor: chartColors.primary,
+                    backgroundColor: postViewsGradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: chartColors.primary,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(75, 85, 99, 0.1)'
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: { 
+                        type: 'time', 
+                        time: { unit: 'day' },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#e5e7eb',
+                        borderColor: 'rgba(107, 114, 128, 0.3)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return moment(tooltipItems[0].parsed.x).format('MMM D, YYYY');
+                            }
+                        }
+                    }
+                }
+            }
+        }),
+        
+        userRegistrations: new Chart(userRegCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'New Users',
+                    borderColor: chartColors.secondary,
+                    backgroundColor: userRegGradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: chartColors.secondary,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(75, 85, 99, 0.1)'
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: { 
+                        type: 'time', 
+                        time: { unit: 'day' },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#e5e7eb',
+                        borderColor: 'rgba(107, 114, 128, 0.3)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false
+                    }
+                }
+            }
+        }),
+        
+        commentActivity: new Chart(commentCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Comments',
+                    borderColor: chartColors.tertiary,
+                    backgroundColor: commentGradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: chartColors.tertiary,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(75, 85, 99, 0.1)'
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: { 
+                        type: 'time', 
+                        time: { unit: 'day' },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#e5e7eb',
+                        borderColor: 'rgba(107, 114, 128, 0.3)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false
+                    }
+                }
+            }
+        }),
+        
+        categoryStats: new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary,
+                        chartColors.quaternary,
+                        '#f97316',
+                        '#06b6d4',
+                        '#8b5cf6'
+                    ],
+                    borderColor: '#111827',
+                    borderWidth: 2,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#e5e7eb',
+                        borderColor: 'rgba(107, 114, 128, 0.3)',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false
+                    }
+                }
+            }
+        })
+    };
+
+    // Socket.io connection for real-time updates
+    let socket;
+    try {
+        // Initialize socket connection
+        socket = io();
+        
+        // Handle real-time visitor updates
+        socket.on('visitor_update', function(data) {
+            document.getElementById('online-now').textContent = data.online_count;
+            
+            // Update real-time visitor chart if it exists
+            if (charts.realTimeVisitors) {
+                charts.realTimeVisitors.data.datasets[0].data = data.hourly_data;
+                charts.realTimeVisitors.update();
+            }
+        });
+    } catch (e) {
+        console.log('Socket.io not available, falling back to polling');
+        // If socket.io is not available, we'll use polling instead
+    }
+
+    // Fetch and update data
+    async function updateCharts() {
+        // Show loading indicators
+        document.getElementById('refreshData').innerHTML = `
+            <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Loading...
+        `;
+        
+        // Get selected time range
+        const timeRange = document.getElementById('timeRange').value;
+        
+        try {
+            const response = await fetch(`/admin/api/analytics/?days=${timeRange}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error('Failed to fetch analytics data');
+            }
+            
+            // Update post views chart
+            charts.postViews.data = {
+                labels: data.post_views.map(item => item.date),
+                datasets: [{
+                    label: 'Post Views',
+                    data: data.post_views.map(item => ({x: item.date, y: item.count})),
+                    borderColor: chartColors.primary,
+                    backgroundColor: postViewsGradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: chartColors.primary,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            };
+            charts.postViews.update();
+            
+            // Update user registrations chart
+            charts.userRegistrations.data = {
+                labels: data.user_registrations.map(item => item.date),
+                datasets: [{
+                    label: 'New Users',
+                    data: data.user_registrations.map(item => ({x: item.date, y: item.count})),
+                    borderColor: chartColors.secondary,
+                    backgroundColor: userRegGradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: chartColors.secondary,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            };
+            charts.userRegistrations.update();
+            
+            // Update comment activity chart
+            charts.commentActivity.data = {
+                labels: data.comment_activity.map(item => item.date),
+                datasets: [{
+                    label: 'Comments',
+                    data: data.comment_activity.map(item => ({x: item.date, y: item.count})),
+                    borderColor: chartColors.tertiary,
+                    backgroundColor: commentGradient,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: chartColors.tertiary,
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            };
+            charts.commentActivity.update();
+            
+            // Update category stats chart
+            charts.categoryStats.data = {
+                labels: data.category_stats.map(item => item.name),
+                datasets: [{
+                    data: data.category_stats.map(item => item.count),
+                    backgroundColor: [
+                        chartColors.primary,
+                        chartColors.secondary,
+                        chartColors.tertiary,
+                        chartColors.quaternary,
+                        '#f97316',
+                        '#06b6d4',
+                        '#8b5cf6'
+                    ],
+                    borderColor: '#111827',
+                    borderWidth: 2,
+                    hoverOffset: 10
+                }]
+            };
+            charts.categoryStats.update();
+            
+            // Update trend percentages
+            updateTrendPercentages(data);
+            
+            // Update online user count if socket.io not available
+            if (!socket) {
+                document.getElementById('online-now').textContent = Math.floor(Math.random() * 10) + 5; // Placeholder
+            }
+            
+            // Restore refresh button
+            document.getElementById('refreshData').innerHTML = `
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh Data
+            `;
+        } catch (error) {
+            console.error('Error fetching analytics data:', error);
+            
+            // Restore refresh button on error
+            document.getElementById('refreshData').innerHTML = `
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Refresh Data
+            `;
+        }
+    }
+    
+    // Calculate and update trend percentages
+    function updateTrendPercentages(data) {
+        // Calculate trends (simplified example)
+        let viewsTrend = 10; // Placeholder: 10% increase
+        let usersTrend = 5;  // Placeholder: 5% increase
+        let commentsTrend = -2; // Placeholder: 2% decrease
+        
+        // Views trend
+        const viewsElement = document.getElementById('views-trend');
+        const viewsPercentElement = document.getElementById('views-percent');
+        viewsPercentElement.textContent = `${Math.abs(viewsTrend)}%`;
+        if (viewsTrend >= 0) {
+            viewsElement.classList.remove('text-red-400');
+            viewsElement.classList.add('text-green-400');
+            viewsElement.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>';
+        } else {
+            viewsElement.classList.remove('text-green-400');
+            viewsElement.classList.add('text-red-400');
+            viewsElement.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>';
+        }
+        
+        // Users trend
+        const usersElement = document.getElementById('users-trend');
+        const usersPercentElement = document.getElementById('users-percent');
+        usersPercentElement.textContent = `${Math.abs(usersTrend)}%`;
+        if (usersTrend >= 0) {
+            usersElement.classList.remove('text-red-400');
+            usersElement.classList.add('text-green-400');
+            usersElement.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>';
+        } else {
+            usersElement.classList.remove('text-green-400');
+            usersElement.classList.add('text-red-400');
+            usersElement.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>';
+        }
+        
+        // Comments trend
+        const commentsElement = document.getElementById('comments-trend');
+        const commentsPercentElement = document.getElementById('comments-percent');
+        commentsPercentElement.textContent = `${Math.abs(commentsTrend)}%`;
+        if (commentsTrend >= 0) {
+            commentsElement.classList.remove('text-red-400');
+            commentsElement.classList.add('text-green-400');
+            commentsElement.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>';
+        } else {
+            commentsElement.classList.remove('text-green-400');
+            commentsElement.classList.add('text-red-400');
+            commentsElement.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>';
+        }
+    }
+
+    // Set up event listeners
+    document.getElementById('refreshData').addEventListener('click', updateCharts);
+    document.getElementById('timeRange').addEventListener('change', updateCharts);
+    
+    // Setup WebSocket connection for real-time updates
+    function setupWebSocket() {
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const wsUrl = wsProtocol + window.location.host + '/ws/analytics/';
+        
+        const socket = new WebSocket(wsUrl);
+        
+        socket.onopen = function(e) {
+            console.log('WebSocket connection established');
+            // Add the live indicator
+            const liveIndicator = document.getElementById('live-indicator');
+            if (liveIndicator) {
+                liveIndicator.classList.remove('bg-red-500');
+                liveIndicator.classList.add('bg-green-500');
+            }
+        };
+        
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            // Handle different types of real-time updates
+            if (data.type === 'visitor_update') {
+                // Update online now count
+                const onlineNowElement = document.getElementById('online-now');
+                if (onlineNowElement) {
+                    onlineNowElement.textContent = data.online_users;
+                }
+                
+                // Update hourly visitor chart if it exists
+                if (charts.hourlyVisitors && data.hourly_data) {
+                    updateHourlyVisitorsChart(data.hourly_data);
+                }
+            } else if (data.type === 'page_view') {
+                // Increment total views counter
+                const totalViewsElement = document.querySelector('.total-views');
+                if (totalViewsElement) {
+                    const currentCount = parseInt(totalViewsElement.textContent);
+                    totalViewsElement.textContent = (currentCount + 1).toString();
+                }
+                
+                // Flash indicator for new view
+                flashNewActivity('views');
+            } else if (data.type === 'new_comment') {
+                // Increment comments counter
+                const commentsElement = document.querySelector('.total-comments');
+                if (commentsElement) {
+                    const currentCount = parseInt(commentsElement.textContent);
+                    commentsElement.textContent = (currentCount + 1).toString();
+                }
+                
+                // Flash indicator for new comment
+                flashNewActivity('comments');
+            }
+        };
+        
+        socket.onclose = function(e) {
+            console.log('WebSocket connection closed');
+            // Update the live indicator
+            const liveIndicator = document.getElementById('live-indicator');
+            if (liveIndicator) {
+                liveIndicator.classList.remove('bg-green-500');
+                liveIndicator.classList.add('bg-red-500');
+            }
+            
+            // Try to reconnect after a delay
+            setTimeout(function() {
+                setupWebSocket();
+            }, 5000);
+        };
+        
+        socket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+            // Update the live indicator
+            const liveIndicator = document.getElementById('live-indicator');
+            if (liveIndicator) {
+                liveIndicator.classList.remove('bg-green-500');
+                liveIndicator.classList.add('bg-red-500');
+            }
+        };
+        
+        return socket;
+    }
+    
+    // Helper function to update hourly visitors chart
+    function updateHourlyVisitorsChart(hourlyData) {
+        const hourLabels = hourlyData.map(item => item.hour);
+        const visitorCounts = hourlyData.map(item => item.count);
+        
+        charts.hourlyVisitors.data.labels = hourLabels;
+        charts.hourlyVisitors.data.datasets[0].data = visitorCounts;
+        charts.hourlyVisitors.update();
+    }
+    
+    // Helper function to flash indicator for new activity
+    function flashNewActivity(type) {
+        const element = document.getElementById(`${type}-card`);
+        if (element) {
+            element.classList.add('flash-highlight');
+            setTimeout(() => {
+                element.classList.remove('flash-highlight');
+            }, 1000);
+        }
+    }
+    
+    // Initial data load
+    updateCharts();
+    
+    // Initialize WebSocket connection
+    setupWebSocket();
+    
+    // Set up auto-refresh every 60 seconds
+    setInterval(updateCharts, 60000);
+</script>
+{% endblock %}

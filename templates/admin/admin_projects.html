@@ -1,0 +1,273 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Projects Management{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header with title and actions -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">Projects Management</h1>
+            <p class="text-gray-400 mt-1">Manage your portfolio projects</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <a href="{% url 'projects:admin_project_add' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-lg hover:opacity-90 transition-opacity">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add New Project
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filter by category -->
+    <div class="bg-gray-800/50 backdrop-blur-md rounded-xl p-4 mb-6">
+        <h3 class="text-lg font-semibold mb-2">Filter by Category</h3>
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'projects:admin_projects' %}" class="px-3 py-1 rounded-full {% if not selected_category %}bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %} transition-colors">
+                All
+            </a>
+            {% for category in categories %}
+            <a href="?category={{ category.slug }}" class="px-3 py-1 rounded-full {% if selected_category == category.slug %}bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %} transition-colors">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Projects List -->
+    <div class="bg-gray-800/50 backdrop-blur-md rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-700/50 border-b border-gray-600">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Project</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Created</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Featured</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-600">
+                    {% for project in projects %}
+                    <tr class="hover:bg-gray-700/30 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-3">
+                                <div class="flex-shrink-0 h-12 w-12 overflow-hidden rounded">
+                                    {% if project.image %}
+                                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="h-12 w-12 object-cover">
+                                    {% else %}
+                                    <div class="h-12 w-12 bg-gray-700 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white">{{ project.title }}</div>
+                                    <div class="text-xs text-gray-400 mt-1 truncate max-w-xs">{{ project.description|truncatechars:50 }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if project.category %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-300">{{ project.category.name }}</span>
+                            {% else %}
+                            <span class="text-gray-500">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {{ project.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if project.featured %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-green-900/50 text-green-400">Featured</span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs rounded-full bg-gray-700 text-gray-400">Standard</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center space-x-3">
+                                <a href="{% url 'projects:admin_project_edit' project.id %}" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <button class="text-red-400 hover:text-red-300 transition-colors delete-project-btn" data-id="{{ project.id }}" data-title="{{ project.title|escapejs }}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                                <a href="{% url 'projects:projects_list' %}" class="text-gray-400 hover:text-gray-300 transition-colors" target="_blank">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3">
+                                <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p class="text-gray-500 text-lg">No projects found</p>
+                                <a href="{% url 'projects:admin_project_add' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white rounded-lg hover:opacity-90 transition-opacity mt-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Your First Project
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-900/50 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-white" id="modalTitle">Delete Project</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-300" id="modalDescription">Are you sure you want to delete this project? This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="confirmDeleteBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                    Delete
+                </button>
+                <button type="button" id="cancelDeleteBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-700 text-base font-medium text-gray-300 hover:bg-gray-600 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Custom styling for the projects admin */
+    .transition-opacity {
+        transition: opacity 0.3s ease-in-out;
+    }
+    .hover\:opacity-90:hover {
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let projectIdToDelete = null;
+    
+    // Add event listeners when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event delegation for delete buttons
+        document.addEventListener('click', function(event) {
+            const deleteBtn = event.target.closest('.delete-project-btn');
+            if (deleteBtn) {
+                const projectId = deleteBtn.dataset.id;
+                const projectTitle = deleteBtn.dataset.title;
+                openDeleteModal(projectId, projectTitle);
+            }
+        });
+        
+        // Cancel button in delete modal
+        document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
+            closeDeleteModal();
+        });
+        
+        // Confirm delete button in modal
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            deleteProject();
+        });
+    });
+    
+    function openDeleteModal(projectId, projectTitle) {
+        projectIdToDelete = projectId;
+        
+        // Update modal text
+        document.getElementById('modalTitle').textContent = `Delete Project: ${projectTitle}`;
+        document.getElementById('modalDescription').textContent = `Are you sure you want to delete "${projectTitle}"? This action cannot be undone.`;
+        
+        // Show modal
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        projectIdToDelete = null;
+    }
+    
+    function deleteProject() {
+        if (projectIdToDelete) {
+            // Send delete request
+            fetch(`/projects/admin/delete/${projectIdToDelete}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload page on success
+                    window.location.reload();
+                } else {
+                    alert('Error deleting project: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the project.');
+            })
+            .finally(() => {
+                closeDeleteModal();
+            });
+        }
+    }
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

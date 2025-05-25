@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mustafa Pinjari Portfolio</title>
+    {% load static %}
+    {% load socialaccount %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0a051e;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(184, 32, 230, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(218, 125, 32, 0.1) 0%, transparent 30%);
+        }
+        .form-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 2rem;
+            background: rgba(31, 17, 61, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .logo-text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            font-family: 'Ovo', serif;
+            background: linear-gradient(90deg, #b820e6, #da7d20);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        .accent {
+            color: #b820e6;
+            font-size: 5rem;
+            vertical-align: text-bottom;
+            display: inline-block;
+            margin-left: -0.5rem;
+        }
+        .form-input-container {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: rgba(184, 32, 230, 0.5);
+            box-shadow: 0 0 0 2px rgba(184, 32, 230, 0.25);
+        }
+        .input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+            color: #b820e6;
+            width: 1.15rem;
+            height: 1.15rem;
+        }
+        .form-label {
+            position: absolute;
+            left: 2.5rem;
+            top: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            transform: translateY(-1.5rem) translateX(-1.75rem) scale(0.85);
+            color: #b820e6;
+            opacity: 1;
+        }
+        .form-input::placeholder {
+            color: transparent;
+        }
+        .form-input:focus::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .btn-gradient {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(90deg, #b820e6, #da7d20);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(90deg, #c731f8, #e99440);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(184, 32, 230, 0.15);
+        }
+        .divider {
+            height: 1px;
+            width: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            margin: 1.5rem 0;
+        }
+        .link {
+            color: #b820e6;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .link:hover {
+            color: #da7d20;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .alert-error {
+            background-color: rgba(248, 113, 113, 0.1);
+            border-left: 4px solid #f87171;
+            color: #fecaca;
+        }
+        .alert-success {
+            background-color: rgba(52, 211, 153, 0.1);
+            border-left: 4px solid #34d399;
+            color: #a7f3d0;
+        }
+        .forgot-password {
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        .or-divider:before, .or-divider:after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .or-divider span {
+            padding: 0 1rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+        .social-btn svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        .social-btn.google {
+            background-color: rgba(234, 67, 53, 0.1);
+            border-color: rgba(234, 67, 53, 0.3);
+        }
+        .social-btn.google:hover {
+            background-color: rgba(234, 67, 53, 0.2);
+        }
+        .social-btn.github {
+            background-color: rgba(36, 41, 46, 0.1);
+            border-color: rgba(36, 41, 46, 0.3);
+        }
+        .social-btn.github:hover {
+            background-color: rgba(36, 41, 46, 0.2);
+        }
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .form-container {
+                padding: 1.5rem;
+                max-width: 95%;
+            }
+            .logo-text {
+                font-size: 2.75rem;
+            }
+            .accent {
+                font-size: 4rem;
+            }
+            .form-input-container {
+                margin-bottom: 1rem;
+            }
+            .social-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="text-center mb-6">
+            <h1 class="logo-text inline-block">mustafa<span class="accent">.</span></h1>
+            <p class="text-base mt-1 text-gray-300">Login to Your Account</p>
+        </div>
+        
+        {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% load socialaccount %}
+        {% get_providers as socialaccount_providers %}
+        
+        {% if socialaccount_providers %}
+        <div class="social-buttons">
+            {% for provider in socialaccount_providers %}
+                {% if provider.id == 'google' %}
+                <a href="{% provider_login_url 'google' process="login" %}" class="social-btn google">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.514 0-10 4.486-10 10s4.486 10 10 10c10 0 9.998-9.562 9.152-12.329l-9.152 0.683z"></path>
+                    </svg>
+                    Sign in with Google
+                </a>
+                {% endif %}
+                {% if provider.id == 'github' %}
+                <a href="{% provider_login_url 'github' process="login" %}" class="social-btn github">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+                    </svg>
+                    Sign in with GitHub
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Social login buttons hidden because no providers are configured -->
+        {% endif %}
+        
+        <div class="or-divider">
+            <span>or</span>
+        </div>
+        
+        <form method="post" action="/users/login/">
+            {% csrf_token %}
+            
+            <div class="form-input-container">
+                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <input type="text" name="username" id="id_username" class="form-input" placeholder="Username" required>
+                <label for="id_username" class="form-label">Username</label>
+                {% if form.username.errors %}
+                    <p class="input-error">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="form-input-container">
+                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                <input type="password" name="password" id="id_password" class="form-input" placeholder="Password" required>
+                <label for="id_password" class="form-label">Password</label>
+                {% if form.password.errors %}
+                    <p class="input-error">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="forgot-password">
+                <a href="/users/password_reset/" class="link text-sm">Forgot password?</a>
+            </div>
+            
+            <button type="submit" class="btn-gradient">
+                Sign In
+            </button>
+        </form>
+        
+        <div class="divider"></div>
+        
+        <div class="text-center">
+            <p class="text-sm text-gray-400">
+                Don't have an account? 
+                <a href="/users/register/" class="link">Register here</a>
+            </p>
+            <p class="text-sm text-gray-400 mt-4">
+                <a href="/" class="text-gray-400 hover:text-gray-300">Return to Home</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

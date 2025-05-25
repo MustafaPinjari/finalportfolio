@@ -1,0 +1,243 @@
+{% extends 'admin/custom_admin.html' %}
+{% load static %}
+
+{% block admin_content %}
+<div class="bg-gray-900/30 rounded-lg shadow-lg border border-gray-800 mb-8">
+    <div class="px-6 py-4 border-b border-gray-800">
+        <h3 class="text-xl font-semibold text-white">
+            {% if is_create %}Create New User{% else %}Edit User: {{ user_obj.username }}{% endif %}
+        </h3>
+        <p class="mt-1 text-sm text-gray-400">
+            {% if is_create %}Add a new user to the system{% else %}Update user information and settings{% endif %}
+        </p>
+    </div>
+    
+    <div class="px-6 py-5">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if messages %}
+            <div class="mb-6 p-4 rounded-md bg-red-900/50 border border-red-800">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-300">
+                            There were errors with your submission
+                        </h3>
+                        <div class="mt-2 text-sm text-red-200">
+                            <ul class="list-disc pl-5 space-y-1">
+                                {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <!-- User Information -->
+                <div class="sm:col-span-6">
+                    <h3 class="text-lg font-medium text-white">User Information</h3>
+                    <p class="mt-1 text-sm text-gray-400">Update the user's information</p>
+                </div>
+                
+                <!-- Username -->
+                <div class="sm:col-span-3">
+                    <label for="{{ user_form.username.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Username
+                    </label>
+                    <div class="mt-1">
+                        {{ user_form.username }}
+                    </div>
+                </div>
+                
+                <!-- Email -->
+                <div class="sm:col-span-3">
+                    <label for="{{ user_form.email.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Email
+                    </label>
+                    <div class="mt-1">
+                        {{ user_form.email }}
+                    </div>
+                </div>
+                
+                <!-- First Name -->
+                <div class="sm:col-span-3">
+                    <label for="{{ user_form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        First Name
+                    </label>
+                    <div class="mt-1">
+                        {{ user_form.first_name }}
+                    </div>
+                </div>
+                
+                <!-- Last Name -->
+                <div class="sm:col-span-3">
+                    <label for="{{ user_form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Last Name
+                    </label>
+                    <div class="mt-1">
+                        {{ user_form.last_name }}
+                    </div>
+                </div>
+                
+                {% if is_create %}
+                <!-- Password 1 -->
+                <div class="sm:col-span-3">
+                    <label for="{{ user_form.password1.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Password
+                    </label>
+                    <div class="mt-1">
+                        {{ user_form.password1 }}
+                    </div>
+                    <p class="mt-2 text-sm text-gray-400">{{ user_form.password1.help_text|safe }}</p>
+                </div>
+                
+                <!-- Password 2 -->
+                <div class="sm:col-span-3">
+                    <label for="{{ user_form.password2.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Confirm Password
+                    </label>
+                    <div class="mt-1">
+                        {{ user_form.password2 }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Staff Status -->
+                <div class="sm:col-span-3">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ user_form.is_staff }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ user_form.is_staff.id_for_label }}" class="font-medium text-gray-300">Staff Status</label>
+                            <p class="text-gray-400">Staff users have access to the admin panel</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Superuser Status -->
+                <div class="sm:col-span-3">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ user_form.is_superuser }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ user_form.is_superuser.id_for_label }}" class="font-medium text-gray-300">Superuser Status</label>
+                            <p class="text-gray-400">Superusers have full permissions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Status -->
+                <div class="sm:col-span-6">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ user_form.is_active }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ user_form.is_active.id_for_label }}" class="font-medium text-gray-300">Active</label>
+                            <p class="text-gray-400">Inactive accounts cannot login</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Information (if provided) -->
+                {% if not is_create %}
+                <div class="sm:col-span-6 border-t border-gray-800 pt-5 mt-4">
+                    <h3 class="text-lg font-medium text-white">Profile Information</h3>
+                    <p class="mt-1 text-sm text-gray-400">Update the user's profile information</p>
+                </div>
+                
+                <!-- Bio -->
+                <div class="sm:col-span-6">
+                    <label for="{{ profile_form.bio.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Bio
+                    </label>
+                    <div class="mt-1">
+                        {{ profile_form.bio }}
+                    </div>
+                </div>
+                
+                <!-- Profile Picture -->
+                <div class="sm:col-span-6">
+                    <label for="{{ profile_form.profile_picture.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Profile Picture
+                    </label>
+                    <div class="mt-1 flex items-center">
+                        {% if user_obj.profile.profile_picture %}
+                        <div class="mr-4">
+                            <img src="{{ user_obj.profile.profile_picture.url }}" alt="Current Profile Picture" class="h-16 w-16 rounded-full object-cover bg-gray-800">
+                        </div>
+                        {% endif %}
+                        {{ profile_form.profile_picture }}
+                    </div>
+                </div>
+                
+                <!-- Notification Settings -->
+                <div class="sm:col-span-6 border-t border-gray-800 pt-5 mt-4">
+                    <h3 class="text-lg font-medium text-white">Notification Settings</h3>
+                    <p class="mt-1 text-sm text-gray-400">Configure user notification preferences</p>
+                </div>
+                
+                <!-- Email Notifications -->
+                <div class="sm:col-span-6">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ profile_form.receive_email_notifications }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ profile_form.receive_email_notifications.id_for_label }}" class="font-medium text-gray-300">Email Notifications</label>
+                            <p class="text-gray-400">Receive general email notifications</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comment Reply Notifications -->
+                <div class="sm:col-span-3">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ profile_form.receive_comment_replies }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ profile_form.receive_comment_replies.id_for_label }}" class="font-medium text-gray-300">Comment Replies</label>
+                            <p class="text-gray-400">Receive notifications for comment replies</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Post Notifications -->
+                <div class="sm:col-span-3">
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            {{ profile_form.receive_new_post_notifications }}
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="{{ profile_form.receive_new_post_notifications.id_for_label }}" class="font-medium text-gray-300">New Post Notifications</label>
+                            <p class="text-gray-400">Receive notifications for new posts</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="pt-8 flex justify-end">
+                <button type="button" onclick="window.history.back()" class="px-4 py-2 mr-3 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#b820e6] to-[#da7d20] hover:opacity-90 transition-all duration-200">
+                    {% if is_create %}Create User{% else %}Update User{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

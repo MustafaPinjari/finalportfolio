@@ -1,0 +1,326 @@
+{% extends 'admin/base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Backup & Restore</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'custom_admin' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Backup & Restore</li>
+    </ol>
+    
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Total Backups</div>
+                            <div class="h3">{{ stats.total_backups }}</div>
+                        </div>
+                        <i class="fas fa-database fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'backup:backup_list' %}">View All Backups</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Successful Backups</div>
+                            <div class="h3">{{ stats.successful_backups }}</div>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'backup:backup_list' %}?status=completed">View Successful</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Total Size</div>
+                            <div class="h3">{{ stats.total_size_mb }} MB</div>
+                        </div>
+                        <i class="fas fa-hdd fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <span class="small text-white">Total Storage Used</span>
+                    <div class="small text-white"><i class="fas fa-info-circle"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small">Restore Points</div>
+                            <div class="h3">{{ restore_points|length }}</div>
+                        </div>
+                        <i class="fas fa-history fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'backup:restore_list' %}">View Restore Points</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Backup Controls -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-save me-1"></i>
+                    Backup Controls
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'backup:create_manual_backup' %}" method="post" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="backup-note" class="form-label">Note</label>
+                            <textarea id="backup-note" name="note" class="form-control" rows="3" placeholder="Optional note about this backup"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="include-media" name="include_media" checked>
+                                <label class="form-check-label" for="include-media">Include Media</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="include-static" name="include_static" checked>
+                                <label class="form-check-label" for="include-static">Include Static</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-database me-1"></i> Create Backup
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Import Backup</h5>
+                    </div>
+                    
+                    <form action="{% url 'backup:import_backup' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="backup-file" class="form-label">Backup File</label>
+                            <input type="file" id="backup-file" name="backup_file" class="form-control" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-file-import me-1"></i> Import Backup
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Backup Schedules -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    Backup Schedules
+                </div>
+                <div class="card-body">
+                    {% if schedules %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Frequency</th>
+                                    <th>Next Run</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in schedules %}
+                                <tr>
+                                    <td>{{ schedule.name }}</td>
+                                    <td>{{ schedule.get_frequency_display }}</td>
+                                    <td>{{ schedule.next_run|date:"Y-m-d H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'backup:edit_backup_schedule' schedule.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'backup:delete_backup_schedule' schedule.id %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center my-3">No backup schedules configured</p>
+                    {% endif %}
+                    
+                    <a href="{% url 'backup:create_backup_schedule' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-1"></i> Add Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Backups -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-history me-1"></i>
+                    Recent Backups
+                </div>
+                <div class="card-body">
+                    {% if recent_backups %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for backup in recent_backups %}
+                                <tr>
+                                    <td>{{ backup.created_at|date:"Y-m-d H:i" }}</td>
+                                    <td>{{ backup.get_backup_type_display }}</td>
+                                    <td>{{ backup.file_size_mb }} MB</td>
+                                    <td>
+                                        {% if backup.status == 'completed' %}
+                                        <span class="badge bg-success">{{ backup.get_status_display }}</span>
+                                        {% elif backup.status == 'in_progress' %}
+                                        <span class="badge bg-info">{{ backup.get_status_display }}</span>
+                                        {% elif backup.status == 'failed' %}
+                                        <span class="badge bg-danger">{{ backup.get_status_display }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ backup.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'backup:backup_detail' backup.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'backup:backup_download' backup.id %}" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <a href="{% url 'backup:backup_delete' backup.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center my-3">No backups found</p>
+                    {% endif %}
+                    
+                    <a href="{% url 'backup:backup_list' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-list me-1"></i> View All Backups
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Restore Points -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-undo me-1"></i>
+                    Restore Points
+                </div>
+                <div class="card-body">
+                    {% if restore_points %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for point in restore_points %}
+                                <tr>
+                                    <td>{{ point.name }}</td>
+                                    <td>{{ point.created_at|date:"Y-m-d H:i" }}</td>
+                                    <td>
+                                        {% if point.status == 'ready' %}
+                                        <span class="badge bg-success">{{ point.get_status_display }}</span>
+                                        {% elif point.status == 'in_progress' %}
+                                        <span class="badge bg-info">{{ point.get_status_display }}</span>
+                                        {% elif point.status == 'failed' %}
+                                        <span class="badge bg-danger">{{ point.get_status_display }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ point.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'backup:restore_detail' point.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'backup:execute_restore' point.id %}" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-undo"></i>
+                                            </a>
+                                            <a href="{% url 'backup:delete_restore_point' point.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center my-3">No restore points found</p>
+                    {% endif %}
+                    
+                    <a href="{% url 'backup:create_restore_point' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-1"></i> Create Restore Point
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // JavaScript for real-time backup status updates would go here
+    $(document).ready(function() {
+        // Initialize any interactive elements
+    });
+</script>
+{% endblock %}

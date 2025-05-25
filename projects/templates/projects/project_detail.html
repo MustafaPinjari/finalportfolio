@@ -1,0 +1,493 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.title }} - Project Details</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
+</head>
+<body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
+    <!-- Navbar -->
+    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-darkTheme shadow-sm">
+        <!-- Logo -->
+        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
+    
+        <!-- Menu Items (Hidden on Mobile) -->
+        <ul class="hidden md:flex gap-6">
+            <li><a href="{% url 'home' %}" class="hover:text-lightHover" style="color: #ff7f50;">Home</a></li>
+            <li><a href="/about" class="hover:text-lightHover" style="color: #ff7f50;">About</a></li>
+            <li><a href="{% url 'blog:blog_list' %}" class="hover:text-lightHover" style="color: #ff7f50;">Blogs</a></li>
+            <li><a href="{% url 'projects:projects_list' %}" class="hover:text-lightHover font-bold" style="color: #ff7f50;">Projects</a></li>
+            <li><a href="/contact" class="hover:text-lightHover" style="color: #ff7f50;">Contact</a></li>
+        </ul>
+    
+        <!-- Hamburger Icon (Visible on Mobile) -->
+        <button id="menu-button" class="md:hidden text-3xl text-coral focus:outline-none">
+            &#9776; <!-- Hamburger Icon -->
+        </button>
+    
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed top-0 right-0 w-64 h-full bg-darkTheme shadow-lg transform translate-x-full transition-transform duration-300">
+            <button id="close-sidebar" class="absolute top-4 right-4 text-2xl text-white focus:outline-none">
+                &times; <!-- Close Icon -->
+            </button>
+            <ul class="mt-20 flex flex-col gap-6 px-6">
+                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Home</a></li>
+                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">About</a></li>
+                <li><a href="{% url 'blog:blog_list' %}" class="text-white hover:text-coral">Blogs</a></li>
+                <li><a href="{% url 'projects:projects_list' %}" class="text-white hover:text-coral">Projects</a></li>
+                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Project Detail Section -->
+    <main class="mt-20 px-[8%] py-12">
+        <!-- Navigation Breadcrumbs -->
+        <div class="mb-8 flex items-center gap-2 text-gray-400">
+            <a href="{% url 'home' %}" class="hover:text-coral">Home</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <a href="{% url 'projects:projects_list' %}" class="hover:text-coral">Projects</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <span class="text-coral">{{ project.title }}</span>
+        </div>
+    
+        <!-- Project Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-coral mb-4">{{ project.title }}</h1>
+    
+            <div class="flex flex-wrap items-center gap-4 text-gray-400 mb-6">
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ project.created_at|date:"F j, Y" }}
+                </span>
+    
+                {% if project.category %}
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-folder"></i>
+                    {{ project.category.name }}
+                </span>
+                {% endif %}
+    
+                {% if project.featured %}
+                <span class="bg-coral text-white text-xs px-3 py-1 rounded-full">
+                    Featured Project
+                </span>
+                {% endif %}
+            </div>
+    
+            <!-- Project Links -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                {% if project.github_link %}
+                <a href="{{ project.github_link }}" target="_blank" 
+                   class="inline-flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+                {% endif %}
+    
+                {% if project.live_link %}
+                <a href="{{ project.live_link }}" target="_blank" 
+                   class="inline-flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-external-link-alt"></i> Live Demo
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    
+        <!-- Project Image -->
+        {% if project.image %}
+        <div class="mb-10">
+            <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                 class="w-full max-h-[500px] object-cover rounded-lg shadow-lg">
+        </div>
+        {% endif %}
+    
+        <!-- Project Content -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="md:col-span-2">
+                <div class="bg-darkHover p-8 rounded-lg shadow-md mb-8">
+                    <h2 class="text-2xl font-semibold mb-6 text-coral border-b border-gray-700 pb-4">
+                        Project Description
+                    </h2>
+    
+                    <div class="prose prose-dark max-w-none">
+                        {% if project.content %}
+                            {{ project.content|safe }}
+                        {% else %}
+                            <p>{{ project.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+    
+                <!-- Features Section (if content has features) -->
+                <div class="bg-darkHover p-8 rounded-lg shadow-md mb-8">
+                    <h2 class="text-2xl font-semibold mb-6 text-coral border-b border-gray-700 pb-4">
+                        Key Features
+                    </h2>
+    
+                    <ul class="space-y-4">
+                        {% for feature in project.features_list %}
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-coral mt-1"></i>
+                            <span>{{ feature }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="italic text-gray-400">No features listed for this project.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <!-- UI Screenshots Bento Grid -->
+                {% if project.screenshots.exists %}
+                <div class="bg-darkHover p-8 rounded-lg shadow-md mb-8">
+                    <h2 class="text-2xl font-semibold mb-6 text-coral border-b border-gray-700 pb-4">
+                        UI Showcase
+                    </h2>
+                    
+                    <div class="grid grid-cols-4 gap-4 auto-rows-[minmax(100px,_auto)]">
+                        {% for screenshot in project.screenshots.all %}
+                            {% if screenshot.size == 'small' %}
+                                <div class="col-span-1 row-span-1 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
+                                        <h3 class="text-white font-semibold mb-1">{{ screenshot.title }}</h3>
+                                        <p class="text-white/80 text-sm">{{ screenshot.description|truncatechars:50 }}</p>
+                                    </div>
+                                </div>
+                            {% elif screenshot.size == 'medium' %}
+                                <div class="col-span-2 row-span-1 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
+                                        <h3 class="text-white font-semibold mb-1">{{ screenshot.title }}</h3>
+                                        <p class="text-white/80 text-sm">{{ screenshot.description|truncatechars:80 }}</p>
+                                    </div>
+                                </div>
+                            {% elif screenshot.size == 'large' %}
+                                <div class="col-span-2 row-span-2 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
+                                        <h3 class="text-white font-semibold mb-2">{{ screenshot.title }}</h3>
+                                        <p class="text-white/80">{{ screenshot.description|truncatechars:120 }}</p>
+                                    </div>
+                                </div>
+                            {% elif screenshot.size == 'wide' %}
+                                <div class="col-span-4 row-span-1 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
+                                        <h3 class="text-white font-semibold mb-2">{{ screenshot.title }}</h3>
+                                        <p class="text-white/80">{{ screenshot.description|truncatechars:150 }}</p>
+                                    </div>
+                                </div>
+                            {% elif screenshot.size == 'tall' %}
+                                <div class="col-span-1 row-span-2 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
+                                        <h3 class="text-white font-semibold mb-2">{{ screenshot.title }}</h3>
+                                        <p class="text-white/80">{{ screenshot.description|truncatechars:100 }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button id="open-gallery" class="bg-coral hover:bg-coral/80 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-expand-alt mr-2"></i> View Full Gallery
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+    
+            <!-- Sidebar -->
+            <div class="md:col-span-1">
+                <!-- Technologies -->
+                <div class="bg-darkHover p-6 rounded-lg shadow-md mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-coral border-b border-gray-700 pb-3">
+                        Technologies Used
+                    </h3>
+    
+                    <div class="flex flex-wrap gap-2">
+                        {% for tech in project.technology_list %}
+                        <span class="bg-darkTheme text-coral text-sm px-3 py-1 rounded-full border border-gray-700">
+                            {{ tech }}
+                        </span>
+                        {% empty %}
+                        <span class="italic text-gray-400">No technologies listed.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+    
+                <!-- Project Timeline -->
+                <div class="bg-darkHover p-6 rounded-lg shadow-md mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-coral border-b border-gray-700 pb-3">
+                        Project Timeline
+                    </h3>
+    
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-hourglass-start text-coral mt-1"></i>
+                            <div>
+                                <h4 class="font-medium">Started</h4>
+                                <p class="text-gray-400 text-sm">{{ project.created_at|date:"F j, Y" }}</p>
+                            </div>
+                        </div>
+    
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-hourglass-end text-coral mt-1"></i>
+                            <div>
+                                <h4 class="font-medium">Last Updated</h4>
+                                <p class="text-gray-400 text-sm">{{ project.updated_at|date:"F j, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Call to Action -->
+                <div class="bg-coral p-6 rounded-lg shadow-md text-center">
+                    <h3 class="text-xl font-semibold mb-3 text-white">Interested in this project?</h3>
+                    <p class="text-white/90 mb-4">Let's discuss how we can work together on something similar.</p>
+                    <a href="/contact" class="inline-block bg-white text-coral font-medium px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                        Contact Me
+                    </a>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Related Projects -->
+        {% if related_projects %}
+        <div class="mt-16">
+            <h2 class="text-3xl font-bold text-coral mb-8">Related Projects</h2>
+    
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for related in related_projects %}
+                <div class="bg-darkHover p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                    {% if related.image %}
+                    <div class="mb-4 overflow-hidden rounded-lg">
+                        <img src="{{ related.image.url }}" alt="{{ related.title }}" 
+                             class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+                    </div>
+                    {% endif %}
+    
+                    <h3 class="text-xl font-semibold mb-2 text-coral">
+                        <a href="{% url 'projects:project_detail' related.slug %}" class="hover:underline">
+                            {{ related.title }}
+                        </a>
+                    </h3>
+    
+                    <p class="text-gray-400 mb-4">{{ related.description|truncatechars:100 }}</p>
+    
+                    <a href="{% url 'projects:project_detail' related.slug %}" 
+                       class="inline-flex items-center gap-2 text-coral hover:text-coral/80 transition-colors">
+                        View Project <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="mx-auto flex w-full flex-col px-[8%] text-white">
+        <div class="flex flex-col md:flex-row justify-between py-10 border-t border-gray-800">
+            <div class="mb-8 md:mb-0">
+                <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-36 mb-4">
+                <p class="text-gray-400 max-w-sm">Showcasing innovative projects and solutions through elegant design and robust engineering.</p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-coral">Navigation</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="{% url 'home' %}" class="hover:text-coral transition-colors">Home</a></li>
+                        <li><a href="/about" class="hover:text-coral transition-colors">About</a></li>
+                        <li><a href="{% url 'blog:blog_list' %}" class="hover:text-coral transition-colors">Blog</a></li>
+                        <li><a href="{% url 'projects:projects_list' %}" class="hover:text-coral transition-colors">Projects</a></li>
+                        <li><a href="/contact" class="hover:text-coral transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-coral">Connect</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-github mr-2"></i> GitHub</a></li>
+                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-linkedin mr-2"></i> LinkedIn</a></li>
+                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-twitter mr-2"></i> Twitter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-coral">Contact</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-envelope mr-2"></i> contact@example.com</li>
+                        <li><i class="fas fa-phone mr-2"></i> +1 (123) 456-7890</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> New York, NY</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="py-6 text-center border-t border-gray-800">
+            <p class="text-gray-500">&copy; {% now "Y" %} Mustafa's Portfolio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center">
+        <button id="close-gallery" class="absolute top-4 right-4 text-white text-2xl hover:text-coral">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <button id="prev-image" class="absolute left-4 text-white text-3xl hover:text-coral">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <button id="next-image" class="absolute right-4 text-white text-3xl hover:text-coral">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        
+        <div class="w-full max-w-6xl px-4">
+            <div id="gallery-image-container" class="relative">
+                <img id="gallery-image" class="mx-auto max-h-[80vh] max-w-full rounded-lg" src="" alt="">
+                
+                <div id="gallery-caption" class="mt-4 text-center">
+                    <h3 id="gallery-title" class="text-xl font-semibold text-white mb-2"></h3>
+                    <p id="gallery-description" class="text-gray-300"></p>
+                </div>
+            </div>
+            
+            <div class="mt-6 overflow-x-auto whitespace-nowrap pb-2" id="thumbnail-container">
+                <!-- Thumbnails will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const closeSidebar = document.getElementById('close-sidebar');
+    
+            menuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('translate-x-full');
+            });
+    
+            closeSidebar.addEventListener('click', function() {
+                sidebar.classList.add('translate-x-full');
+            });
+            
+            // Gallery functionality
+            const galleryModal = document.getElementById('gallery-modal');
+            const openGalleryBtn = document.getElementById('open-gallery');
+            const closeGalleryBtn = document.getElementById('close-gallery');
+            const galleryImage = document.getElementById('gallery-image');
+            const galleryTitle = document.getElementById('gallery-title');
+            const galleryDescription = document.getElementById('gallery-description');
+            const prevBtn = document.getElementById('prev-image');
+            const nextBtn = document.getElementById('next-image');
+            const thumbnailContainer = document.getElementById('thumbnail-container');
+            
+            // Check if gallery elements exist before proceeding
+            if (!galleryModal || !openGalleryBtn) return;
+            
+            // Collect all screenshots
+            const screenshots = Array.from(document.querySelectorAll('.grid > div[data-title]')).map(el => ({
+                img: el.querySelector('img').src,
+                title: el.dataset.title,
+                description: el.dataset.description
+            }));
+            
+            let currentIndex = 0;
+            
+            function showImage(index) {
+                if (index < 0) index = screenshots.length - 1;
+                if (index >= screenshots.length) index = 0;
+                
+                currentIndex = index;
+                const screenshot = screenshots[index];
+                
+                galleryImage.src = screenshot.img;
+                galleryImage.alt = screenshot.title;
+                galleryTitle.textContent = screenshot.title;
+                galleryDescription.textContent = screenshot.description;
+                
+                // Highlight current thumbnail
+                const thumbnails = thumbnailContainer.querySelectorAll('.thumbnail');
+                thumbnails.forEach((thumb, i) => {
+                    if (i === index) {
+                        thumb.classList.add('ring-2', 'ring-coral', 'ring-offset-2', 'ring-offset-black');
+                    } else {
+                        thumb.classList.remove('ring-2', 'ring-coral', 'ring-offset-2', 'ring-offset-black');
+                    }
+                });
+            }
+            
+            // Create thumbnails
+            function createThumbnails() {
+                thumbnailContainer.innerHTML = '';
+                screenshots.forEach((screenshot, index) => {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'thumbnail inline-block h-16 w-24 mx-1 rounded cursor-pointer overflow-hidden transition-all duration-200';
+                    thumb.innerHTML = `<img src="${screenshot.img}" alt="${screenshot.title}" class="w-full h-full object-cover">`;
+                    
+                    thumb.addEventListener('click', () => showImage(index));
+                    thumbnailContainer.appendChild(thumb);
+                });
+            }
+            
+            // Open gallery when clicking the open gallery button
+            openGalleryBtn.addEventListener('click', function() {
+                galleryModal.classList.remove('hidden');
+                createThumbnails();
+                showImage(0);
+                document.body.classList.add('overflow-hidden');
+            });
+            
+            // Open gallery when clicking any screenshot
+            document.querySelectorAll('.grid > div[data-title]').forEach((el, index) => {
+                el.addEventListener('click', function() {
+                    galleryModal.classList.remove('hidden');
+                    createThumbnails();
+                    showImage(index);
+                    document.body.classList.add('overflow-hidden');
+                });
+            });
+            
+            // Close gallery
+            closeGalleryBtn.addEventListener('click', function() {
+                galleryModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+            
+            // Previous image
+            prevBtn.addEventListener('click', function() {
+                showImage(currentIndex - 1);
+            });
+            
+            // Next image
+            nextBtn.addEventListener('click', function() {
+                showImage(currentIndex + 1);
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (galleryModal.classList.contains('hidden')) return;
+                
+                if (e.key === 'Escape') {
+                    galleryModal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else if (e.key === 'ArrowLeft') {
+                    showImage(currentIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    showImage(currentIndex + 1);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

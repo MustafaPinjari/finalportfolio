@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog List</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
+    <!-- Add CSRF token meta tag for AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <script>
+        const menuButton = document.getElementById('menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const closeSidebar = document.getElementById('close-sidebar');
+    
+        // Open Sidebar
+        menuButton.addEventListener('click', () => {
+            sidebar.style.transform = 'translateX(0)';
+        });
+    
+        // Close Sidebar
+        closeSidebar.addEventListener('click', () => {
+            sidebar.style.transform = 'translateX(100%)';
+        });
+    
+        // Close Sidebar When Clicking Outside
+        window.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && e.target !== menuButton) {
+                sidebar.style.transform = 'translateX(100%)';
+            }
+        });
+    </script>
+    
+</head>
+<body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
+    <!-- Navbar -->
+    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-darkTheme shadow-sm">
+        <!-- Logo -->
+        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
+    
+        <!-- Menu Items (Hidden on Mobile) -->
+        <ul class="hidden md:flex gap-6">
+            <li><a href="{% url 'home' %}" class="hover:text-lightHover" style="color: #ff7f50;">Home</a></li>
+            <li><a href="/about" class="hover:text-lightHover" style="color: #ff7f50;">About</a></li>
+            <li><a href="/blogs" class="hover:text-lightHover" style="color: #ff7f50;">Blogs</a></li>
+            <li><a href="/contact" class="hover:text-lightHover" style="color: #ff7f50;">Contact</a></li>
+        </ul>
+    
+        <!-- Hamburger Icon (Visible on Mobile) -->
+        <button id="menu-button" class="md:hidden text-3xl text-coral focus:outline-none">
+            &#9776; <!-- Hamburger Icon -->
+        </button>
+    
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed top-0 right-0 w-64 h-full bg-darkTheme shadow-lg transform translate-x-full transition-transform duration-300">
+            <button id="close-sidebar" class="absolute top-4 right-4 text-2xl text-white focus:outline-none">
+                &times; <!-- Close Icon -->
+            </button>
+            <ul class="mt-20 flex flex-col gap-6 px-6">
+                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Home</a></li>
+                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">About</a></li>
+                <li><a href="{% url 'blog:blog_list' %}" class="text-white hover:text-coral">Blogs</a></li>
+                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+
+    <!-- Blog List -->
+    <main class="mt-20 px-[8%]">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <form method="GET" action="{% url 'blog:blog_list' %}" class="search-form">
+                <input type="text" name="q" value="{{ search_query }}" 
+                       class="search-input"
+                       placeholder="Search blogs...">
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
+        
+        <!-- Categories -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-coral">Explore Topics</h2>
+                <div class="flex gap-2">
+                    <button class="nav-arrow" onclick="scrollCategories('left')">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-arrow" onclick="scrollCategories('right')">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="categories-container">
+                <div class="categories-wrapper">
+                    <a href="{% url 'blog:blog_list' %}" 
+                       class="topic-btn {% if not request.GET.category %}active{% endif %}">
+                        <i class="fas fa-globe"></i>
+                        <span>All ({{ posts.count }})</span>
+                    </a>
+                    {% for category in categories %}
+                    <a href="?category={{ category.slug }}" 
+                       class="topic-btn {% if request.GET.category == category.slug %}active{% endif %}">
+                        <i class="fas {% if category.name == 'Technology' %}fa-microchip
+                                  {% elif category.name == 'Web Development' %}fa-code
+                                  {% elif category.name == 'Mobile Development' %}fa-mobile-alt
+                                  {% elif category.name == 'Artificial Intelligence' %}fa-brain
+                                  {% elif category.name == 'Machine Learning' %}fa-robot
+                                  {% elif category.name == 'Data Science' %}fa-chart-bar
+                                  {% elif category.name == 'Cloud Computing' %}fa-cloud
+                                  {% elif category.name == 'DevOps' %}fa-server
+                                  {% elif category.name == 'Cybersecurity' %}fa-shield-alt
+                                  {% elif category.name == 'Blockchain' %}fa-link
+                                  {% elif category.name == 'IoT' %}fa-network-wired
+                                  {% elif category.name == 'Software Engineering' %}fa-cogs
+                                  {% elif category.name == 'UI/UX Design' %}fa-pencil-ruler
+                                  {% elif category.name == 'Frontend Development' %}fa-laptop-code
+                                  {% elif category.name == 'Backend Development' %}fa-database
+                                  {% else %}fa-folder{% endif %}"></i>
+                        <span>{{ category.name }} ({{ category.posts.count }})</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    
+        <!-- Blog Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in posts %}
+            <div class="bg-darkHover p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" 
+                     class="w-full h-48 object-cover rounded mb-4">
+                {% endif %}
+                <div class="mb-4">
+                    {% for tag in post.tags.all %}
+                    <span class="inline-block bg-coral text-white text-sm px-2 py-1 rounded mr-2">
+                        #{{ tag.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+                <h2 class="text-2xl font-semibold mb-2">
+                    <a href="{% url 'blog:blog_detail' post.slug %}" class="hover:text-coral">
+                        {{ post.title }}
+                    </a>
+                </h2>
+                <p class="text-gray-400 text-sm mb-4">
+                    In {{ post.category.name }} | {{ post.created_at|date:"F j, Y" }}
+                </p>
+                <p class="text-gray-300">{{ post.content|safe|truncatechars:200 }}</p>
+                
+                <!-- Add Favorite Button -->
+                {% if user.is_authenticated %}
+                <div class="mt-4 flex justify-between items-center">
+                    <a href="{% url 'blog:blog_detail' post.slug %}" class="inline-flex items-center text-coral hover:text-coral/70 transition-colors">
+                        Read more
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </a>
+                    <button class="favorite-btn inline-flex items-center px-3 py-1.5 rounded-lg bg-darkTheme/60 border border-gray-700 hover:border-coral/30 text-gray-400 hover:text-white transition-all"
+                            data-post-id="{{ post.id }}" 
+                            onclick="toggleFavorite('{{ post.id }}')">
+                        <i class="{% if user.profile in post.favorited_by.all or post in user.profile.favorite_posts.all %}fas{% else %}far{% endif %} fa-bookmark mr-1.5"></i>
+                        <span class="favorite-label text-sm">{% if user.profile in post.favorited_by.all or post in user.profile.favorite_posts.all %}Saved{% else %}Save{% endif %}</span>
+                    </button>
+                </div>
+                {% else %}
+                <div class="mt-4">
+                    <a href="{% url 'blog:blog_detail' post.slug %}" class="inline-flex items-center text-coral hover:text-coral/70 transition-colors">
+                        Read more
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </a>
+                </div>
+                {% endif %}
+                
+                <!-- Social Share Buttons -->
+                <div class="mt-4 flex gap-2">
+                    <a href="https://api.whatsapp.com/send?text={{ post.title }}%20-%20{{ request.build_absolute_uri }}"
+                       target="_blank" class="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors flex items-center gap-2">
+                        <i class="fab fa-whatsapp"></i>
+                        WhatsApp
+                    </a>
+                    <a href="https://www.instagram.com/share?url={{ request.build_absolute_uri }}"
+                       target="_blank" class="p-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white rounded hover:opacity-90 transition-opacity flex items-center gap-2">
+                        <i class="fab fa-instagram"></i>
+                        Instagram
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Pagination -->
+        {% if posts.has_other_pages %}
+        <div class="flex justify-center gap-2 mt-8">
+            {% if posts.has_previous %}
+            <a href="?page={{ posts.previous_page_number }}" 
+               class="px-4 py-2 bg-coral text-white rounded">Previous</a>
+            {% endif %}
+            
+            {% for num in posts.paginator.page_range %}
+            <a href="?page={{ num }}" 
+               class="px-4 py-2 {% if posts.number == num %}bg-coral{% else %}bg-darkHover{% endif %} text-white rounded">
+                {{ num }}
+            </a>
+            {% endfor %}
+            
+            {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}" 
+               class="px-4 py-2 bg-coral text-white rounded">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </main>
+    
+  
+     <!-- footer -->
+      <footer class="mx-auto flex w-full flex-col px-[8%] text-white">
+        <!-- email part -->
+        <div
+          class="flex w-full flex-col items-center gap-5 border-b-[0.5px] border-gray-500 pb-20"
+        >
+          <img src="{% static 'img/logo.png'%}"  loading="lazy" alt="" class="w-40 dark:hidden" />
+          <img src="{% static 'img/logo_dark.png'%}" loading="lazy"alt="" class="hidden w-40 dark:block" />
+          <p
+            class="flex gap-2 text-center text-sm text-white"
+          >
+            <img src="{% static 'img/mail_icon.png' %}" loading="lazy" alt="" class="w-6 dark:hidden" />
+            <img
+              src="{% static 'img/mail_icon_dark.png'%}"
+              loading="lazy"
+              alt=""
+              class="hidden w-6 dark:block"
+            />
+          mustafapinjari344@gmail.com  
+          </p>
+        </div>
+        <!-- link part -->
+        <div
+          class="flex flex-col items-center justify-between gap-5 py-10 md:flex-row"
+        >
+          <p class="text-lg font-semibold text-white">
+            &copy; 2024 Mustafa Pinjari. All rights reserved.
+          </p>
+          <div class="flex gap-8 md:gap-12 text-white">
+            <a href="https://github.com/MustafaPinjari" class="font-medium">Github</a>
+            <a href="https://www.whatsapp.com/send?text={{ post.title }}%20-%20{{ request.build_absolute_uri }}" class="font-medium">WhatsApp</a>
+            <a href="https://www.instagram.com/its_ur_musuuu/" class="font-medium">Instagram</a>
+          </div>
+        </div>
+      </footer>
+    
+    <!-- Move the script to the bottom of the body tag -->
+        </footer>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const menuButton = document.getElementById('menu-button');
+                const sidebar = document.getElementById('sidebar');
+                const closeSidebar = document.getElementById('close-sidebar');
+            
+            // Open Sidebar
+            menuButton.addEventListener('click', () => {
+                sidebar.style.transform = 'translateX(0)';
+            });
+        
+            // Close Sidebar
+            closeSidebar.addEventListener('click', () => {
+                sidebar.style.transform = 'translateX(100%)';
+            });
+        
+            // Close Sidebar When Clicking Outside
+            window.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && e.target !== menuButton) {
+                    sidebar.style.transform = 'translateX(100%)';
+                }
+            });
+        });
+        </script>
+        <script>
+          function scrollCategories(direction) {
+              const container = document.querySelector('.categories-wrapper');
+              const scrollAmount = 300;
+              if (direction === 'left') {
+                  container.scrollLeft -= scrollAmount;
+              } else {
+                  container.scrollLeft += scrollAmount;
+              }
+          }
+          </script>
+          <!-- Add blog.js for favorite functionality -->
+          <script src="{% static 'js/blog.js' %}"></script>
+    </body>
+    </html>

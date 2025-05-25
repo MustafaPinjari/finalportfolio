@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "outfit";
+}
+
+/* h1,h2,h3,h4,h5,h6,p, nav a{
+    font-family: "ovo";
+} */
+.error-message {
+  color: red;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .projects-section {
+      display: none;
+  }
+}
+

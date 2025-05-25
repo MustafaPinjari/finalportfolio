@@ -1,0 +1,904 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mustafa Pinjari | Portfolio</title>
+    <link rel="icon" type="image/png" href="{% static 'img/Mustafa-light.png' %}" loading="lazy">
+    {% load static compress %}
+
+    <!-- Replace existing CSS links -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% endcompress %}
+
+    <!-- Replace existing JS scripts -->
+    {% compress js %}
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/user-menu.js' %}"></script>
+    <script src="{% static 'js/dropdown.js' %}"></script>
+    {% endcompress %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Ovo&display=swap"
+      rel="stylesheet"
+    />
+    
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="description" content="Mustafa Pinjari - Experienced Full Stack Developer specializing in Django, Python, and modern web technologies. View my portfolio of innovative web projects and technical blog posts.">
+    <meta name="keywords" content="Mustafa Pinjari, full stack developer, django developer, web development, Mumbai developer, Python developer, portfolio, tech blog, web applications">
+    <meta name="author" content="Mustafa Pinjari">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="English">
+    
+    <!-- Enhanced Open Graph Tags -->
+    <meta property="og:title" content="Mustafa Pinjari | Full Stack Developer Portfolio">
+    <meta property="og:description" content="Experienced Full-Stack Developer showcasing innovative web projects and technical expertise in Django, Python, and modern web technologies.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{% static 'img/og-image.jpg' %}">
+    <meta property="og:url" content="/">
+    <meta property="og:site_name" content="Mustafa Pinjari Portfolio">
+    
+    <!-- Enhanced Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@yourtwitterhandle">
+    <meta name="twitter:creator" content="@yourtwitterhandle">
+    <meta name="twitter:title" content="Mustafa Pinjari | Full Stack Developer">
+    <meta name="twitter:description" content="Full Stack Developer specializing in Django and modern web technologies">
+    <meta name="twitter:image" content="{% static 'img/og-image.jpg' %}">
+</head>
+
+<!-- script file -->
+<script src="{% static 'js/script.js' %}"></script>
+<!-- adding recaptcha -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
+    <div class="w-screen overflow-x-hidden">
+      <!-- bg image  -->
+      <div
+        class="fixed right-0 top-0 -z-10 w-11/12 translate-y-[-80%] dark:hidden"
+      >
+        <img src="{% static 'img/header-bg-color.png' %}" loading="lazy" alt="bg" class="w-full" />
+      </div>
+      <!-- navbar -->
+      <nav
+        class="fixed z-50 flex w-full items-center justify-between px-[8%] py-4 dark:shadow-sm"
+        id="navbar"
+      >
+        <!-- logo -->
+        <img
+  src="{% static 'img/Mustafa-light.png' %}"
+  alt="lightlogo"
+  loading="lazy"
+  class="w-28 cursor-pointer dark:hidden"
+/>
+<img
+  src="{% static 'img/Mustafa_dark.png' %}"
+  alt="darklogo"
+  loading="lazy"
+  class="hidden w-28 cursor-pointer dark:block"
+/>
+
+        <!-- menu item -->
+        <div
+          class="hidden gap-5 rounded-full border bg-white bg-opacity-50 px-7 py-4 shadow-sm md:flex lg:gap-10 lg:px-8 dark:bg-transparent"
+          id="menubar"
+        >
+          <a href="#home">Home</a>
+          <a href="#about">About me</a>
+          <a href="#service">Services</a>
+          <a href="#work">My Work</a>
+          <a href="#contact">Contact me</a>
+          <a href="{% url 'blog:blog_list' %}">Blogs</a>
+        </div>
+        <!-- theme, contact and mobile menu bar-->
+        <div class="flex items-center gap-5 sm:gap-6">
+          <!-- theme button -->
+          <img
+            src="{% static 'img/moon_icon.png' %}"
+            loading="lazy"
+            alt="dark mode"
+            id="moon"
+            onclick="toggleTheme()"
+            class="size-6 cursor-pointer dark:hidden"
+          />
+          <img
+            src="{% static 'img/sun_icon.png'%}"
+            loading="lazy"
+            alt="light mode"
+            id="sun"
+            onclick="toggleTheme()"
+            class="hidden size-6 cursor-pointer dark:block"
+          />
+          
+          <!-- User Authentication -->
+          <div class="ml-4 relative">
+            {% if user.is_authenticated %}
+              <div class="relative">
+                <button id="user-menu-button" class="flex items-center space-x-2 rounded-full bg-white/10 px-4 py-2 hover:bg-white/20 dark:bg-gray-800/50 dark:hover:bg-gray-800/80">
+                  {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="h-6 w-6 rounded-full">
+                  {% else %}
+                    <svg class="h-6 w-6 text-gradient" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  {% endif %}
+                  <span>{{ user.username }}</span>
+                  <svg class="-mr-1 ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                <!-- User Menu -->
+                <div id="user-dropdown" class="absolute right-0 mt-2 hidden w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-darkHover" style="z-index: 50;">
+                  <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Profile</a>
+                  {% if user.is_staff %}
+                    <a href="{% url 'custom_admin' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">Admin</a>
+                  {% endif %}
+                  <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700">Logout</a>
+                </div>
+              </div>
+            {% else %}
+              <!-- User Icon Dropdown -->
+              <div class="relative">
+                <button id="user-type-button" onclick="document.getElementById('user-type-dropdown').classList.toggle('hidden');" class="flex items-center justify-center rounded-full bg-white/10 p-2 hover:bg-white/20 dark:bg-gray-800/50 dark:text-white dark:hover:bg-gray-700/80" aria-expanded="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </button>
+                
+                <!-- User Type Selection Dropdown -->
+                <div id="user-type-dropdown" class="absolute right-0 mt-2 hidden w-72 rounded-md bg-white py-2 shadow-xl ring-1 ring-black ring-opacity-5 dark:bg-darkHover dark:bg-opacity-90" style="z-index: 50;">
+                  <div class="px-4 py-3 text-center">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Select User Type</h3>
+                  </div>
+                  <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                  <a href="/users/register/" class="flex items-center px-6 py-4 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <p class="text-base font-medium text-gray-900 dark:text-white">Normal User</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">Create an account to save favorite posts</p>
+                    </div>
+                  </a>
+                  <a href="{% url 'custom_admin' %}" class="flex items-center px-6 py-4 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <p class="text-base font-medium text-gray-900 dark:text-white">Administrator</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">Access the admin panel with credentials</p>
+                    </div>
+                  </a>
+                  <div class="border-t border-gray-100 px-6 py-3 dark:border-gray-700">
+                    <p class="text-sm text-center text-gray-500 dark:text-gray-400 mb-2">Already have an account?</p>
+                    <a href="/users/login/" class="block rounded bg-gradient-to-r from-[#b820e6] to-[#da7d20] px-4 py-2 text-center text-base font-medium text-white hover:opacity-90">
+                      Sign in
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- contact button -->
+          <button
+            class="hidden items-center justify-center gap-4 rounded-full border border-gray-500 px-10 py-3 lg:flex"
+          >
+            <a href="#contact">Contact</a>
+            <img
+              src="{% static 'img/arrow-icon.png' %}"
+              
+              loading="lazy"
+              alt="arrow-icon"
+              class="size-3 dark:hidden"
+            />
+            <img
+              src="{% static 'img/arrow-icon-dark.png' %}"
+              loading="lazy"
+              alt="arrow-icon"
+              class="hidden size-3 dark:block"
+            />
+          </button>
+          <!-- menu bar icon -->
+          <div
+            id="open-menu"
+            class="cursor-pointer md:hidden"
+            onclick="openMenu()"
+          >
+            <img
+              src="{% static 'img/menu-black.png'%}"
+              loading="lazy"
+              alt="menu bar"
+              class="size-6 dark:hidden"
+            />
+            <img
+              src="{% static 'img/menu-white.png'%}"
+              loading="lazy"
+              alt="menu bar"
+              class="hidden size-6 dark:block"
+            />
+          </div>
+        </div>
+        <!-- mobile menu -->
+        <div
+          id="sidemenu"
+          class="z-1000 fixed -right-64 bottom-0 top-0 flex h-screen w-64 flex-col gap-y-6 bg-red-50 px-10 py-20 pt-40 transition duration-500 md:hidden dark:bg-darkHover"
+        >
+          <!-- menu closing icon -->
+          <div
+            class="absolute right-6 top-6 cursor-pointer"
+            id="close-menu"
+            onclick="closeMenu()"
+          >
+            <img
+              src="{% static 'img/close-black.png' %}"
+              loading="lazy"
+              alt="close menu"
+              class="size-6 dark:hidden"
+            />
+            <img
+              src="{% static 'img/close-white.png'%}"
+              loading="lazy"
+              alt="close menu"
+              class="hidden size-6 dark:block"
+            />
+          </div>
+          <!-- mobile menu bar list -->
+          <a href="#home">Home</a>
+          <a href="#about">About me</a>
+          <a href="#service">Services</a>
+          <a href="#work">My Work</a>
+          <a href="#contact">Contact me</a>
+        </div>
+      </nav>
+
+      <!-- MAIN CONTENT BLOCK -->
+      {% block content %}
+      <!-- home section -->
+
+      <section
+        id="home"
+        class="pt-30 mb-5 flex flex-col items-center justify-center gap-3 px-[12%] py-10 text-center font-ovo sm:gap-5"
+      >
+      
+        <img
+          src="{% static 'img/profile-img.png'%}"
+          loading="lazy"
+          alt=""
+          class="mt-24 w-24 rounded-full sm:w-32"
+        />
+        <h3 class="text-lg sm:text-xl md:text-2xl">Hi! I'm Mustafa</h3>
+        <h1 class="max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+          Full-Stack web developer based in Mumbai.
+        </h1>
+        <p class="max-w-xl text-base/6 sm:text-base/8">
+          I am a Full-Stack developer from Mumbai, India with a passion for crafting 
+          exceptional user experiences. With over 4 years of expertise.
+        </p>
+        <!-- buttons -->
+        <div class="flex flex-col gap-4 font-outfit md:flex-row">
+          <button
+            class="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#b820e6] to-[#da7d20] px-10 py-4 text-white"
+          >
+            <a href="#contact">Contact me</a>
+            <img
+              src="{% static 'img/right-arrow-white.png'%}"
+              loading="lazy"
+              alt="right-arrow"
+              class="mt-1 w-4"
+            />
+          </button>
+          <button
+            class="flex items-center justify-center gap-2 rounded-full border border-gray-500 px-10 py-4 dark:bg-white dark:text-darkTheme"
+          >
+            <a href="/img/resume.docx">my resume</a>
+            <img
+              src="{% static 'img/download-icon.png'%}"
+              loading="lazy"
+              alt="download-icon"
+              class="size-3 dark:size-4"
+            />
+          </button>
+        </div>
+
+        
+      </section>
+
+      <!-- about section -->
+      <section
+        id="about"
+        class="mb-5 w-full scroll-mt-20 px-[12%] py-10 font-ovo"
+      >
+        <p class="text-center text-lg">Introduction</p>
+        <h3 class="mt-2 text-center text-5xl">About me</h3>
+        <!-- main about -->
+        <div class="my-20 flex w-full flex-col items-center gap-20 lg:flex-row">
+          <!-- left side -->
+          <div class="relative mx-auto max-w-max">
+            <img
+              src="{% static 'img/user-image.jpg'%}"
+              loading="lazy"
+              alt=""
+              class="w-64 max-w-none rounded-lg sm:w-80"
+            />
+            <!-- rotating box -->
+            <div
+              class="absolute bottom-0 right-0 flex aspect-square w-1/2 translate-x-1/4 translate-y-1/3 items-center justify-center rounded-full bg-white shadow-[0_4px_55px_slate-200]"
+            >
+              <img
+                src="{%static 'img/circular-text.png'%}"
+                loading="lazy"
+                alt=""
+                class="w-full animate-spin-slow"
+              />
+              
+              <img
+                src="{% static 'img/dev-icon.png'%}"
+                loading="lazy"
+                alt=""
+                class="absolute left-1/2 top-1/2 w-1/4 -translate-x-1/2 -translate-y-1/2"
+              />
+            </div>
+          </div>
+          <!-- right side -->
+          <div>
+            <p class="mb-10 max-w-2xl leading-8">
+              I am an experienced Full-Stack Developer with over a decade of
+              professional expertise in the field. Throughout my career, I have
+              had the privilege of collaborating with prestigious organizations,
+              contributing to their success and growth.
+            </p>
+            <!-- cards -->
+            <ul
+              class="card flex max-w-2xl flex-col gap-6 font-outfit sm:flex-row"
+            >
+              <!-- <ul class=" grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl">  -->
+              <!-- card 01 -->
+              <li
+                class="hover:lightHover flex-1 cursor-pointer rounded-2xl border-[0.5px] border-gray-400 p-6 duration-500 hover:-translate-y-1 hover:shadow-black dark:text-white dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+              >
+                <img
+                  src="{% static 'img/code-icon.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-3 w-7 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/code-icon-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-3 hidden w-7 dark:block"
+                />
+                <h3 class="my-4 font-semibold text-gray-700 dark:text-white">
+                  Languages
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-white">
+                  HTML, CSS, JavaScript, python,Django,Bootstrap
+                </p>
+              </li>
+              <!-- card 02 -->
+              <li
+                class="hover:lightHover flex-1 cursor-pointer rounded-2xl border-[0.5px] border-gray-400 p-6 duration-500 hover:-translate-y-1 hover:shadow-black dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+              >
+                <img
+                  src="{% static 'img/edu-icon.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-3 w-7 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/edu-icon-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-3 hidden w-7 dark:block"
+                />
+                <h3 class="my-4 font-semibold text-gray-700 dark:text-white">
+                  Education
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-white">
+                  BCA
+                </p>
+              </li>
+              <!-- card 03 -->
+              <li
+                class="hover:lightHover flex-1 cursor-pointer rounded-2xl border-[0.5px] border-gray-400 p-6 duration-500 hover:-translate-y-1 hover:shadow-black dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+              >
+                <img
+                  src="{%static 'img/project-icon.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-3 w-7 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/project-icon-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-3 hidden w-7 dark:block"
+                />
+                <h3 class="my-4 font-semibold text-gray-700 dark:text-white">
+                  Projects
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-white">
+                  Built more than 50 full stack projects
+                </p>
+              </li>
+            </ul>
+            <!-- tools -->
+            <h3 class="py-5 text-gray-700 dark:text-white">Tools I use</h3>
+            
+            <ul class="flex items-center gap-4">
+              <li
+                class="cursor-pointer rounded-lg border-[0.5px] border-gray-400 p-3 duration-500 hover:-translate-y-2 hover:shadow-[1px_1px_black]"
+              >
+                <img src="{% static 'img/vscode.png'%}" alt="" class="w-8" loading="lazy" />
+              </li>
+              <li
+                class="cursor-pointer rounded-lg border-[0.5px] border-gray-400 p-3 duration-500 hover:-translate-y-2 hover:shadow-[1px_1px_black]"
+              >
+                <img src="{%static 'img/Netlify.png'%}" alt="" class="w-8" loading="lazy"/>
+              </li>
+              <li
+                class="cursor-pointer rounded-lg border-[0.5px] border-gray-400 p-3 duration-500 hover:-translate-y-2 hover:shadow-[1px_1px_black]"
+              >
+                <img src="{% static 'img/github.png'%}" alt="" class="w-8" loading="lazy"/>
+              </li>
+              <li
+                class="cursor-pointer rounded-lg border-[0.5px] border-gray-400 p-3 duration-500 hover:-translate-y-2 hover:shadow-[1px_1px_black]"
+              >
+                <img src="{% static 'img/canva.png'%}" loading="lazy" alt="" class="w-8" />
+              </li>
+              <li
+                class="cursor-pointer rounded-lg border-[0.5px] border-gray-400 p-3 duration-500 hover:-translate-y-2 hover:shadow-[1px_1px_black]"
+              >
+                <img src="{% static 'img/figma.png'%}" loading="lazy" alt="" class="w-8" />
+              </li>
+              <li
+                class="cursor-pointer rounded-lg border-[0.5px] border-gray-400 p-3 duration-500 hover:-translate-y-2 hover:shadow-[1px_1px_black]"
+              >
+                <img src="{% static 'img/git.png'%}" loading="lazy" alt="" class="w-8" />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- Projects -->
+      <section class="projects-section">
+        <h2 class="my-5 text-center text-5xl">Projects</h2>
+        <div class="container" style="display: flex; height: 80vh; width: 100vw; align-items: center; justify-content: flex-start; padding-left: 20vw;">
+            <div class="grid" style="display: grid; width: 70%; height: 100%; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 16px; padding: 16px; border-radius: 12px;">
+    
+                <!-- Grid item 1 (taller) -->
+                <div class="grid-item" style="position: relative; grid-column: span 2; grid-row: span 4; background-color: #f0f0f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;">
+                    <img src="{% static '/img/Gf.png'%}" alt="Image 1" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); transition: filter 0.3s ease;">
+                    <div class="grid-item-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0)); padding: 16px; color: white;">
+                        <h3 style="margin: 0; font-size: 1.5rem;">GuestureFlow</h3>
+                    </div>
+                </div>
+    
+                <!-- Grid item 2 (shorter) -->
+                <div class="grid-item" style="position: relative; grid-column: span 2; grid-row: span 2; background-color: #f0f0f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;">
+                    <img src="{% static 'img/pdf.png'%}" alt="Image 2" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); transition: filter 0.3s ease;">
+                    <div class="grid-item-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0)); padding: 16px; color: white;">
+                        <h3 style="margin: 0; font-size: 1.5rem;">Pdfiy</h3>
+                    </div>
+                </div>
+    
+                <!-- Grid item 3 (taller) -->
+                <div class="grid-item" style="position: relative; grid-column: span 2; grid-row: span 4; background-color: #f0f0f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;">
+                    <img src="{% static 'img/NextGenCV.png'%}" alt="Image 3" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); transition: filter 0.3s ease;">
+                    <div class="grid-item-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0)); padding: 16px; color: white;">
+                        <h3 style="margin: 0; font-size: 1.5rem;">NextGenCv</h3>
+                    </div>
+                </div>
+    
+                <!-- Grid item 4 (shorter) -->
+                <div class="grid-item" style="position: relative; grid-column: span 2; grid-row: span 2; background-color: #f0f0f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: transform 0.3s ease;">
+                    <img src="{% static 'img/EP.png'%}" alt="Image 4" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); transition: filter 0.3s ease;">
+                    <div class="grid-item-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0)); padding: 16px; color: white;">
+                        <h3 style="margin: 0; font-size: 1.5rem;">ExoPlanet</h3>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+        <button
+          class="hover:lightHover mx-auto my-10 flex items-center gap-3 rounded-full border border-gray-500 px-5 py-2 duration-500 sm:px-12 sm:py-4 dark:border-lightHover"
+        >
+          <a href="{% url 'projects:projects_list' %}" class=""> Show more Project Details </a>
+          <img
+            src="{% static 'img/right-arrow-bold.png'%}"
+            loading="lazy"
+            alt=""
+            class="mt-1 w-4 dark:hidden"
+          />
+          <img
+            src="{% static 'img/right-arrow-dark.png'%}"
+            loading="lazy"
+            alt=""
+            class="mt-1 hidden w-4 dark:block"
+          />
+        </button>
+    </section>
+    
+    
+      <!-- service section -->
+
+      <section
+        id="service"
+        class="mb-5 w-full scroll-mt-20 px-[12%] py-10 font-ovo"
+      >
+        <h3 class="text-center text-lg">What I Offer</h3>
+        <h2 class="my-5 text-center text-5xl">My services</h2>
+        <p class="mx-auto my-3 mb-5 max-w-xl text-center text-base/8">
+          I am a Full-Stack developer from Mumbai, Infia with 4 years of
+          experience in multiple projects 
+        </p>
+        <!-- cards -->
+        <ul
+          class="card mt-10 grid grid-cols-1 gap-6 font-outfit sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <li
+            class="hover:lightHover flex cursor-pointer flex-col gap-5 rounded-lg border-[0.5px] border-gray-400 px-8 py-12 text-gray-700 duration-500 hover:-translate-y-1 hover:shadow-black dark:text-white dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+          >
+            <img src="{% static 'img/web-icon.png'%}" loading="lazy" alt="" class="w-10" />
+            <h4 class="text-xl">Web Development</h4>
+            <p class="text-sm">
+              Web development is the process of building, programming...
+            </p>
+            <h6 class="flex items-center gap-2 text-black dark:text-white">
+              Read More
+              <span>
+                <img
+                  src="{% static 'img/right-arrow.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 w-4 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/right-arrow-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 hidden w-4 dark:block"
+                />
+              </span>
+            </h6>
+          </li>
+          <li
+            class="hover:lightHover flex cursor-pointer flex-col gap-5 rounded-lg border-[0.5px] border-gray-400 px-8 py-12 text-gray-700 duration-500 hover:-translate-y-1 hover:shadow-black dark:text-white dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+          >
+            <img src="{% static 'img/mobile-icon.png'%}" loading="lazy" alt="" class="w-10" />
+            <h4 class="text-xl">Django Web Application</h4>
+            <p class="text-sm">
+              Web development is the process of building, programming...
+            </p>
+            <h6 class="flex items-center gap-2 text-black dark:text-white">
+              Read More
+              <span>
+                <img
+                  src="{% static 'img/right-arrow.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 w-4 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/right-arrow-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 hidden w-4 dark:block"
+                />
+              </span>
+            </h6>
+          </li>
+          <li
+            class="hover:lightHover flex cursor-pointer flex-col gap-5 rounded-lg border-[0.5px] border-gray-400 px-8 py-12 text-gray-700 duration-500 hover:-translate-y-1 hover:shadow-black dark:text-white dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+          >
+            <img src="{% static 'img/ui-icon.png'%}" loading="lazy" alt="" class="w-10" />
+            <h4 class="text-xl">UI/ UX design</h4>
+            <p class="text-sm">
+              Web development is the process of building, programming...
+            </p>
+            <h6 class="flex items-center gap-2 text-black dark:text-white">
+              Read More
+              <span>
+                <img
+                  src="{% static 'img/right-arrow.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 w-4 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/right-arrow-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 hidden w-4 dark:block"
+                />
+              </span>
+            </h6>
+          </li>
+          <li
+            class="hover:lightHover flex cursor-pointer flex-col gap-5 rounded-lg border-[0.5px] border-gray-400 px-8 py-12 text-gray-700 duration-500 hover:-translate-y-1 hover:shadow-black dark:text-white dark:hover:bg-darkHover dark:hover:shadow-lightHover"
+          >
+            <img src="{% static 'img/graphics-icon.png'%}" loading="lazy" alt="" class="w-10" />
+            <h4 class="text-xl">App Development</h4>
+            <p class="text-sm">
+              Web development is the process of building, programming...
+            </p>
+            <h6 class="flex items-center gap-2 text-black dark:text-white">
+              Read More
+              <span>
+                <img
+                  src="{% static 'img/right-arrow.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 w-4 dark:hidden"
+                />
+                <img
+                  src="{% static 'img/right-arrow-dark.png'%}"
+                  loading="lazy"
+                  alt=""
+                  class="mt-1 hidden w-4 dark:block"
+                />
+              </span>
+            </h6>
+          </li>
+        </ul>
+      </section>
+
+      <!-- my work -->
+      <section
+        id="work"
+        class="mb-5 w-full scroll-mt-12 px-[12%] py-10 font-ovo"
+      >
+        <h3 class="text-center text-lg">My Portfolio</h3>
+        <h2 class="my-5 text-center text-5xl">My latest work</h2>
+        <p class="mx-auto mb-10 max-w-xl text-center text-base/8">
+          Welcome to my web development portfolio! Explore a collection of
+          projects showcasing my expertise in front-end development.
+        </p>
+        <!-- work showcase -->
+
+        <ul
+          class="card mb-20 mt-12 grid grid-cols-1 gap-5 font-outfit sm:grid-cols-2 lg:grid-cols-4 dark:text-black"
+        >
+          <li
+            class="group relative aspect-square cursor-pointer rounded-lg bg-[url('../img/work-1.png')] bg-cover bg-center bg-no-repeat"
+          >
+            <div
+              class="absolute bottom-5 left-1/2 flex w-10/12 -translate-x-1/2 items-center justify-between rounded-md bg-white px-5 py-3 duration-500 group-hover:bottom-7"
+            >
+              <div>
+                <h2 class="font-semibold">Full-Stack TimeTable Generator</h2>
+                <p class="text-sm text-gray-700">Web Design</p>
+              </div>
+              <div
+              class="flex aspect-square w-9 items-center justify-center rounded-full border border-black shadow-[2px_2px_black] transition group-hover:bg-lime-300"
+              >
+              <a href="https://github.com/MustafaPinjari" target="_blank">
+                <img src="{% static 'img/send-icon.png'%}" loading="lazy" alt="GitHub Profile" class="w-5" />
+            </a>            
+              </div>
+            </div>
+          </li>
+          <li
+            class="group relative aspect-square cursor-pointer rounded-lg bg-[url('../img/work-2.png')] bg-cover bg-center bg-no-repeat"
+          >
+            <div
+              class="absolute bottom-5 left-1/2 flex w-10/12 -translate-x-1/2 items-center justify-between rounded-md bg-white px-5 py-3 duration-500 group-hover:bottom-7"
+            >
+              <div>
+                <h2 class="font-semibold">Gueture based app</h2>
+                <p class="text-sm text-gray-700">Django app</p>
+              </div>
+              <div
+                class="flex aspect-square w-9 items-center justify-center rounded-full border border-black shadow-[2px_2px_black] transition group-hover:bg-lime-300"
+              >
+              <a href="https://github.com/MustafaPinjari" target="_blank">
+                <img src="{% static 'img/send-icon.png'%}" loading="lazy" alt="GitHub Profile" class="w-5" />
+            </a>
+            
+              </div>
+            </div>
+          </li>
+          <li
+            class="group relative aspect-square cursor-pointer rounded-lg bg-[url('../img/work-3.png')] bg-cover bg-center bg-no-repeat"
+          >
+            <div
+              class="absolute bottom-5 left-1/2 flex w-10/12 -translate-x-1/2 items-center justify-between rounded-md bg-white px-5 py-3 duration-500 group-hover:bottom-7"
+            >
+              <div>
+                <h2 class="font-semibold">Blog site</h2>
+                <p class="text-sm text-gray-700">Web Design</p>
+              </div>
+              <div
+                class="flex aspect-square w-9 items-center justify-center rounded-full border border-black shadow-[2px_2px_black] transition group-hover:bg-lime-300"
+              >
+              <a href="https://github.com/MustafaPinjari" target="_blank">
+                <img src="{% static 'img/send-icon.png'%}" loading="lazy" alt="GitHub Profile" class="w-5" />
+            </a>
+            
+              </div>
+            </div>
+          </li>
+          <li
+            class="group relative aspect-square cursor-pointer rounded-lg bg-[url('../img/work-4.png')] bg-cover bg-center bg-no-repeat"
+          >
+            <div
+              class="absolute bottom-5 left-1/2 flex w-10/12 -translate-x-1/2 items-center justify-between rounded-md bg-white px-5 py-3 duration-500 group-hover:bottom-7"
+            >
+              <div>
+                <h2 class="font-semibold">Parivahan Clones</h2>
+                <p class="text-sm text-gray-700">UI/UX Design</p>
+              </div>
+              <div
+                class="flex aspect-square w-9 items-center justify-center rounded-full border border-black shadow-[2px_2px_black] transition group-hover:bg-lime-300"
+              >
+              <a href="https://github.com/MustafaPinjari" target="_blank">
+                <img src="{% static 'img/send-icon.png'%}"  loading="lazy"alt="GitHub Profile" class="w-5" />
+            </a>            
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <button
+          class="hover:lightHover mx-auto my-10 flex items-center gap-3 rounded-full border border-gray-500 px-5 py-2 duration-500 sm:px-12 sm:py-4 dark:border-lightHover"
+        >
+          <a href="#" class=""> Show more </a>
+          <img
+            src="{% static 'img/right-arrow-bold.png'%}"
+            loading="lazy"
+            alt=""
+            class="mt-1 w-4 dark:hidden"
+          />
+          <img
+            src="{% static 'img/right-arrow-dark.png'%}"
+            loading="lazy"
+            alt=""
+            class="mt-1 hidden w-4 dark:block"
+          />
+        </button>
+      </section>
+
+      <!-- contact -->
+      <section id="contact" class="mb-5 w-full scroll-mt-10 px-[12%] py-10 font-ovo">
+          <h3 class="text-center text-lg">Connect with me</h3>
+          <h2 class="my-5 text-center text-5xl">Get in touch</h2>
+          <p class="mx-auto mb-10 max-w-xl text-center text-base/8">
+              I'd love to hear from you! If you have any questions, comments or feedback, please use the form below.
+          </p>
+      
+          <form id="contactForm" class="mx-auto my-10 flex max-w-2xl flex-col gap-6 font-outfit">
+              {% csrf_token %}
+              <div class="flex w-full flex-col justify-between gap-6 md:flex-row">
+                  <input
+                      type="text"
+                      placeholder="Enter your name"
+                      class="w-full rounded-lg border border-gray-400 bg-slate-100 px-3 py-4 focus:outline-none dark:border-lightHover dark:bg-[#19002c]"
+                      name="name"
+                      required
+                  />
+                  <input
+                      type="email"
+                      placeholder="Enter your email"
+                      class="w-full rounded-lg border border-gray-400 bg-slate-100 px-3 py-4 focus:outline-none dark:border-lightHover dark:bg-[#19002c]"
+                      name="email"
+                      required
+                  />
+              </div>
+      
+              <textarea
+                  class="resize-none rounded-lg border border-gray-400 bg-slate-100 px-3 py-4 focus:bg-slate-100 focus:outline-none md:col-span-2 dark:border-lightHover dark:bg-[#19002c] dark:focus:bg-[#19002c]"
+                  required
+                  placeholder="Enter your message..."
+                  rows="8"
+                  name="message"
+              ></textarea>
+      
+              <button
+                  type="submit"
+                  class="mt-5 flex items-center gap-3 self-center rounded-full border bg-black/80 px-6 py-2.5 text-white duration-500 hover:bg-black/100 sm:px-12 sm:py-4 sm:max-md:w-full dark:border-lightHover dark:bg-darkTheme dark:hover:bg-darkHover"
+              >
+                  Submit now
+                  <img
+                      src="{% static 'img/right-arrow-dark.png' %}"
+                      loading="lazy"
+                      alt=""
+                      class="mt-1 w-4"
+                  />
+              </button>
+          </form>
+      </section>
+
+      <!-- footer -->
+      <footer class="mx-auto flex w-full flex-col px-[8%]">
+        <!-- email part -->
+        <div
+          class="flex w-full flex-col items-center gap-5 border-b-[0.5px] border-gray-500 pb-20"
+        >
+          <img src="{% static 'img/logo.png'%}"  loading="lazy" alt="" class="w-40 dark:hidden" />
+          <img src="{% static 'img/logo_dark.png'%}" loading="lazy"alt="" class="hidden w-40 dark:block" />
+          <p
+            class="flex gap-2 text-center text-sm text-gray-800 dark:text-white"
+          >
+            <img src="{% static 'img/mail_icon.png' %}" loading="lazy" alt="" class="w-6 dark:hidden" />
+            <img
+              src="{% static 'img/mail_icon_dark.png'%}"
+              loading="lazy"
+              alt=""
+              class="hidden w-6 dark:block"
+            />
+          mustafapinjari344@gmail.com  
+          </p>
+        </div>
+        <!-- link part -->
+        <div
+          class="flex flex-col items-center justify-between gap-5 py-10 md:flex-row"
+        >
+          <p class="text-lg font-semibold dark:font-normal">
+            &copy; 2024 Mustafa Pinjari. All rights reserved.
+          </p>
+          <div class="flex gap-8 md:gap-12">
+            <a href="https://github.com/MustafaPinjari" class="font-medium">Github</a>
+            <a href="https://www.linkedin.com/in/mustafa-pinjari-287625256/" class="font-medium">Linkedin</a>
+            <a href="https://www.instagram.com/its_ur_musuuu/" class="font-medium">Instagram</a>
+          </div>
+        </div>
+      </footer>
+      {% endblock %}
+    </div>
+
+    <!-- adding recaptcha -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  </body>
+
+<!-- Success Modal -->
+<div id="successModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div class="absolute left-1/2 top-1/2 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 text-center dark:bg-darkTheme">
+        <i class="fas fa-check-circle text-4xl text-green-500 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-2">Thank You!</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">Your message has been sent to admin. We'll get in touch soon!</p>
+        <button onclick="closeModal()" class="px-6 py-2 bg-coral text-white rounded-full hover:bg-coral/90 transition-colors">
+            Close
+        </button>
+    </div>
+</div>
+<!-- Add before closing body tag -->
+<script src="{% static 'js/contact.js' %}"></script>
+
+<!-- Direct dropdown functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // User dropdown functionality
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userDropdown = document.getElementById('user-dropdown');
+    
+    if (userMenuButton && userDropdown) {
+      // Toggle dropdown on button click
+      userMenuButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        userDropdown.classList.toggle('hidden');
+      });
+      
+      // Close dropdown when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        if (!userMenuButton.contains(e.target) && !userDropdown.contains(e.target)) {
+          userDropdown.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script>
+</html>
