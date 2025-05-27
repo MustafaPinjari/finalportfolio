@@ -194,6 +194,12 @@ LOGIN_REDIRECT_URL = 'profile'  # Where to redirect after login if no next param
 ACCOUNT_LOGOUT_REDIRECT_URL = 'login'  # Where to redirect after logout
 LOGIN_URL = 'login'  # Our custom login URL
 
+# Session Security Settings
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_SECURE = True  # Only send cookies over HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Session expires when browser closes
+
 # Email backend (for development, console output)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 

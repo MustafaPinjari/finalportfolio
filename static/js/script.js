@@ -6,6 +6,11 @@ function openMenu() {
   const backdrop = document.getElementById('mobile-backdrop');
   const sidemenu = document.getElementById('sidemenu');
   
+  if (!backdrop || !sidemenu) {
+    console.error('Mobile menu elements not found');
+    return;
+  }
+  
   // Show the menu and backdrop
   sidemenu.classList.add('translate-x-0');
   sidemenu.classList.remove('translate-x-full');
@@ -21,6 +26,11 @@ function openMenu() {
 function closeMenu() {
   const backdrop = document.getElementById('mobile-backdrop');
   const sidemenu = document.getElementById('sidemenu');
+  
+  if (!backdrop || !sidemenu) {
+    console.error('Mobile menu elements not found');
+    return;
+  }
   
   // Hide the menu and backdrop
   sidemenu.classList.remove('translate-x-0');
@@ -47,13 +57,35 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeButton = document.getElementById('close-menu');
   const openButton = document.getElementById('open-menu');
   
-  // Ensure menu starts in the correct state
+  // Ensure mobile menu starts hidden
   if (sidemenu) {
+    // Force the sidebar to be hidden initially
+    sidemenu.classList.remove('translate-x-0');
     sidemenu.classList.add('translate-x-full');
   }
   
+  if (backdrop) {
+    backdrop.classList.add('hidden');
+  }
+  
+  // Make sure open button works
+  if (openButton) {
+    openButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      openMenu();
+    });
+  }
+  
+  // Make sure close button works
+  if (closeButton) {
+    closeButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      closeMenu();
+    });
+  }
+  
   // Add click handlers to all mobile menu links that should close the menu
-  const mobileMenuLinks = document.querySelectorAll('#sidemenu a[onclick="closeMenu()"]');
+  const mobileMenuLinks = document.querySelectorAll('#sidemenu a');
   mobileMenuLinks.forEach(link => {
     link.addEventListener('click', function(e) {
       // Keep the link's default behavior but also close the menu
