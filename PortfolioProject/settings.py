@@ -110,21 +110,16 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Database configuration with SQLite locally and support for PostgreSQL in production
-import dj_database_url
+# Using SQLite database for both development and production
+# With support for custom path on Render via environment variable
+SQLITE_PATH = os.environ.get('SQLITE_PATH', os.path.join(BASE_DIR, 'db.sqlite3'))
 
-# Default SQLite database for development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': SQLITE_PATH,
     }
 }
-
-# Use production database URL from environment variable if available
-database_url = os.environ.get('DATABASE_URL')
-if database_url:
-    DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Static and Media settings
 STATIC_URL = '/static/'

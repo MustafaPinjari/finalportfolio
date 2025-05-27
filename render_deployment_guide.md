@@ -35,12 +35,20 @@ Add the following environment variables in the Render dashboard:
 - `DEBUG`: Set to `False` for production
 - `DATABASE_URL`: This will be automatically set if you use Render's PostgreSQL
 
-### 3. Database Setup
+### 3. Database Setup (SQLite)
 
-1. In the Render dashboard, go to "New" and select "PostgreSQL"
-2. Create a new PostgreSQL database
-3. Note the internal connection string
-4. Link your web service to this database
+Since you're using SQLite as your database:
+
+1. Create a persistent disk on Render to store your SQLite database
+   - In the Render dashboard, under your web service, go to "Disks"
+   - Create a new disk with at least 1GB of space
+   - Mount it at `/opt/render/project/src/db`
+
+2. Add an environment variable to update your database path:
+   - Add `SQLITE_PATH=/opt/render/project/src/db/db.sqlite3`
+
+3. Before the first deployment, you'll need to copy your existing SQLite database to the persistent disk
+   - You can use SFTP or Render's shell to upload your db.sqlite3 file
 
 ### 4. WebSockets Configuration
 
