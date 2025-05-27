@@ -32,3 +32,6 @@ django-tailwind==4.0.1
 # API support
 djangorestframework==3.15.0
 djangorestframework-simplejwt==5.4.0
+
+# NLP for blog features
+nltk==3.9.1
