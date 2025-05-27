@@ -102,6 +102,11 @@ TEMPLATES = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://mustafa-pinjari.onrender.com',
+    'http://mustafa-pinjari.onrender.com',
+]
+
 WSGI_APPLICATION = 'PortfolioProject.wsgi.application'
 
 # Channels configuration
