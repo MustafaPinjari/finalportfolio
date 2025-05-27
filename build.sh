@@ -2,7 +2,8 @@
 # exit on error
 set -o errexit
 
-pip install -r requirements.txt
+# Use the deployment-specific requirements file
+pip install -r requirements-render.txt
 
 python manage.py collectstatic --no-input
 python manage.py migrate

@@ -2,6 +2,7 @@
 Django==5.0.1
 asgiref==3.8.1
 sqlparse==0.4.4
+python-dotenv==1.0.0
 
 # Authentication
 django-allauth==0.57.0

@@ -1,0 +1,40 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+local_settings.py
+
+# Virtual Environment
+env/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# SQLite database - uncomment if you want to exclude it from git
+# db.sqlite3
+
+# Media files
+media/
+
+# Static files
+staticfiles/
+
+# Cache
+django_cache/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Backups
+backups/
+
+# Node modules
+node_modules/
