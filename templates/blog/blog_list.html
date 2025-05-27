@@ -1,77 +1,13 @@
+{% extends 'blog/blog_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog List</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-    <!-- Add CSRF token meta tag for AJAX requests -->
-    <meta name="csrf-token" content="{{ csrf_token }}">
-    <script>
-        const menuButton = document.getElementById('menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const closeSidebar = document.getElementById('close-sidebar');
-    
-        // Open Sidebar
-        menuButton.addEventListener('click', () => {
-            sidebar.style.transform = 'translateX(0)';
-        });
-    
-        // Close Sidebar
-        closeSidebar.addEventListener('click', () => {
-            sidebar.style.transform = 'translateX(100%)';
-        });
-    
-        // Close Sidebar When Clicking Outside
-        window.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && e.target !== menuButton) {
-                sidebar.style.transform = 'translateX(100%)';
-            }
-        });
-    </script>
-    
-</head>
-<body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
-    <!-- Navbar -->
-    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-darkTheme shadow-sm">
-        <!-- Logo -->
-        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
-    
-        <!-- Menu Items (Hidden on Mobile) -->
-        <ul class="hidden md:flex gap-6">
-            <li><a href="{% url 'home' %}" class="hover:text-lightHover" style="color: #ff7f50;">Home</a></li>
-            <li><a href="/about" class="hover:text-lightHover" style="color: #ff7f50;">About</a></li>
-            <li><a href="/blogs" class="hover:text-lightHover" style="color: #ff7f50;">Blogs</a></li>
-            <li><a href="/contact" class="hover:text-lightHover" style="color: #ff7f50;">Contact</a></li>
-        </ul>
-    
-        <!-- Hamburger Icon (Visible on Mobile) -->
-        <button id="menu-button" class="md:hidden text-3xl text-coral focus:outline-none">
-            &#9776; <!-- Hamburger Icon -->
-        </button>
-    
-        <!-- Sidebar -->
-        <div id="sidebar" class="fixed top-0 right-0 w-64 h-full bg-darkTheme shadow-lg transform translate-x-full transition-transform duration-300">
-            <button id="close-sidebar" class="absolute top-4 right-4 text-2xl text-white focus:outline-none">
-                &times; <!-- Close Icon -->
-            </button>
-            <ul class="mt-20 flex flex-col gap-6 px-6">
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Home</a></li>
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">About</a></li>
-                <li><a href="{% url 'blog:blog_list' %}" class="text-white hover:text-coral">Blogs</a></li>
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+
+{% block title %}Blog List{% endblock %}
+
+{% block content %}
     
 
     <!-- Blog List -->
-    <main class="mt-20 px-[8%]">
+    <main class="mt-20 px-[8%] container mx-auto">
         <!-- Search Bar -->
         <div class="search-container">
             <form method="GET" action="{% url 'blog:blog_list' %}" class="search-form">
@@ -219,83 +155,20 @@
         </div>
         {% endif %}
     </main>
-    
-  
-     <!-- footer -->
-      <footer class="mx-auto flex w-full flex-col px-[8%] text-white">
-        <!-- email part -->
-        <div
-          class="flex w-full flex-col items-center gap-5 border-b-[0.5px] border-gray-500 pb-20"
-        >
-          <img src="{% static 'img/logo.png'%}"  loading="lazy" alt="" class="w-40 dark:hidden" />
-          <img src="{% static 'img/logo_dark.png'%}" loading="lazy"alt="" class="hidden w-40 dark:block" />
-          <p
-            class="flex gap-2 text-center text-sm text-white"
-          >
-            <img src="{% static 'img/mail_icon.png' %}" loading="lazy" alt="" class="w-6 dark:hidden" />
-            <img
-              src="{% static 'img/mail_icon_dark.png'%}"
-              loading="lazy"
-              alt=""
-              class="hidden w-6 dark:block"
-            />
-          mustafapinjari344@gmail.com  
-          </p>
-        </div>
-        <!-- link part -->
-        <div
-          class="flex flex-col items-center justify-between gap-5 py-10 md:flex-row"
-        >
-          <p class="text-lg font-semibold text-white">
-            &copy; 2024 Mustafa Pinjari. All rights reserved.
-          </p>
-          <div class="flex gap-8 md:gap-12 text-white">
-            <a href="https://github.com/MustafaPinjari" class="font-medium">Github</a>
-            <a href="https://www.whatsapp.com/send?text={{ post.title }}%20-%20{{ request.build_absolute_uri }}" class="font-medium">WhatsApp</a>
-            <a href="https://www.instagram.com/its_ur_musuuu/" class="font-medium">Instagram</a>
-          </div>
-        </div>
-      </footer>
-    
-    <!-- Move the script to the bottom of the body tag -->
-        </footer>
-        
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const menuButton = document.getElementById('menu-button');
-                const sidebar = document.getElementById('sidebar');
-                const closeSidebar = document.getElementById('close-sidebar');
-            
-            // Open Sidebar
-            menuButton.addEventListener('click', () => {
-                sidebar.style.transform = 'translateX(0)';
-            });
-        
-            // Close Sidebar
-            closeSidebar.addEventListener('click', () => {
-                sidebar.style.transform = 'translateX(100%)';
-            });
-        
-            // Close Sidebar When Clicking Outside
-            window.addEventListener('click', (e) => {
-                if (!sidebar.contains(e.target) && e.target !== menuButton) {
-                    sidebar.style.transform = 'translateX(100%)';
-                }
-            });
-        });
-        </script>
-        <script>
-          function scrollCategories(direction) {
-              const container = document.querySelector('.categories-wrapper');
-              const scrollAmount = 300;
-              if (direction === 'left') {
-                  container.scrollLeft -= scrollAmount;
-              } else {
-                  container.scrollLeft += scrollAmount;
-              }
-          }
-          </script>
-          <!-- Add blog.js for favorite functionality -->
-          <script src="{% static 'js/blog.js' %}"></script>
-    </body>
-    </html>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function scrollCategories(direction) {
+        const container = document.querySelector('.categories-wrapper');
+        const scrollAmount = 300;
+        if (direction === 'left') {
+            container.scrollLeft -= scrollAmount;
+        } else {
+            container.scrollLeft += scrollAmount;
+        }
+    }
+</script>
+<!-- Add blog.js for favorite functionality -->
+<script src="{% static 'js/blog.js' %}"></script>
+{% endblock %}

@@ -62,7 +62,7 @@
                     <div class="mt-1">
                         {{ form.slug }}
                     </div>
-                    <p class="mt-1 text-xs text-gray-400">Leave blank to auto-generate from title. Use lowercase letters, numbers, and hyphens only.</p>
+                    <p class="mt-1 text-xs text-gray-400">Leave blank to auto-generate from title. Use lowercase letters, numbers, and hyphens only. Maximum 50 characters.</p>
                 </div>
                 
                 <!-- Content -->
@@ -87,6 +87,22 @@
                     <p class="mt-1 text-xs text-gray-400">A short summary of the post. If left blank, an excerpt will be generated from the content.</p>
                 </div>
                 
+                <!-- Image Upload -->
+                <div class="sm:col-span-6">
+                    <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Blog Image
+                    </label>
+                    <div class="mt-1">
+                        {% if post and post.image %}
+                        <div class="mb-3">
+                            <img src="{{ post.image.url }}" alt="Current image" class="h-32 object-cover rounded" />
+                        </div>
+                        {% endif %}
+                        {{ form.image }}
+                    </div>
+                    <p class="mt-1 text-xs text-gray-400">Upload an image for this blog post.</p>
+                </div>
+                
                 <!-- Featured Image -->
                 <div class="sm:col-span-6">
                     <label for="{{ form.featured_image.id_for_label }}" class="block text-sm font-medium text-gray-300">
@@ -102,15 +118,18 @@
                     </div>
                 </div>
                 
-                <!-- Categories -->
+                <!-- Category -->
                 <div class="sm:col-span-3">
-                    <label for="{{ form.categories.id_for_label }}" class="block text-sm font-medium text-gray-300">
-                        Categories
+                    <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Category <span class="text-red-400">*</span>
                     </label>
                     <div class="mt-1">
-                        {{ form.categories }}
+                        {{ form.category }}
                     </div>
-                    <p class="mt-1 text-xs text-gray-400">Select one or more categories (hold Ctrl/Cmd to select multiple).</p>
+                    <p class="mt-1 text-xs text-gray-400">Select a category for this post (required).</p>
+                    {% if not form.category.field.choices.queryset %}
+                        <p class="mt-1 text-xs text-red-400">No categories available. <a href="{% url 'admin_category_create' %}" class="underline">Create a category first</a>.</p>
+                    {% endif %}
                 </div>
                 
                 <!-- Tags -->
@@ -122,6 +141,43 @@
                         {{ form.tags }}
                     </div>
                     <p class="mt-1 text-xs text-gray-400">Enter tags separated by commas.</p>
+                </div>
+                
+                <!-- Image Upload -->
+                <div class="sm:col-span-6">
+                    <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Blog Image
+                    </label>
+                    <div class="mt-1 flex items-center">
+                        <span class="inline-block h-12 w-12 overflow-hidden rounded-md bg-gray-800 mr-4">
+                            {% if form.instance.image %}
+                                <img src="{{ form.instance.image.url }}" alt="Current image" class="h-full w-full object-cover">
+                            {% else %}
+                                <svg class="h-full w-full text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            {% endif %}
+                        </span>
+                        <div>
+                            {{ form.image }}
+                        </div>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-400">Upload an image for this blog post.</p>
+                </div>
+                
+                <!-- Featured Image -->
+                <div class="sm:col-span-6">
+                    <label for="{{ form.featured_image.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                        Featured Image
+                    </label>
+                    <div class="mt-1 flex items-center">
+                        {% if post.featured_image %}
+                        <div class="mr-4">
+                            <img src="{{ post.featured_image.url }}" alt="Current Featured Image" class="h-32 w-32 object-cover bg-gray-800 rounded">
+                        </div>
+                        {% endif %}
+                        {{ form.featured_image }}
+                    </div>
                 </div>
                 
                 <!-- Publication Settings -->

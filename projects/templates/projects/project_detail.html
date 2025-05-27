@@ -1,368 +1,501 @@
+{% extends 'projects/project_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ project.title }} - Project Details</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-</head>
-<body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
-    <!-- Navbar -->
-    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-darkTheme shadow-sm">
-        <!-- Logo -->
-        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
-    
-        <!-- Menu Items (Hidden on Mobile) -->
-        <ul class="hidden md:flex gap-6">
-            <li><a href="{% url 'home' %}" class="hover:text-lightHover" style="color: #ff7f50;">Home</a></li>
-            <li><a href="/about" class="hover:text-lightHover" style="color: #ff7f50;">About</a></li>
-            <li><a href="{% url 'blog:blog_list' %}" class="hover:text-lightHover" style="color: #ff7f50;">Blogs</a></li>
-            <li><a href="{% url 'projects:projects_list' %}" class="hover:text-lightHover font-bold" style="color: #ff7f50;">Projects</a></li>
-            <li><a href="/contact" class="hover:text-lightHover" style="color: #ff7f50;">Contact</a></li>
-        </ul>
-    
-        <!-- Hamburger Icon (Visible on Mobile) -->
-        <button id="menu-button" class="md:hidden text-3xl text-coral focus:outline-none">
-            &#9776; <!-- Hamburger Icon -->
-        </button>
-    
-        <!-- Sidebar -->
-        <div id="sidebar" class="fixed top-0 right-0 w-64 h-full bg-darkTheme shadow-lg transform translate-x-full transition-transform duration-300">
-            <button id="close-sidebar" class="absolute top-4 right-4 text-2xl text-white focus:outline-none">
-                &times; <!-- Close Icon -->
-            </button>
-            <ul class="mt-20 flex flex-col gap-6 px-6">
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Home</a></li>
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">About</a></li>
-                <li><a href="{% url 'blog:blog_list' %}" class="text-white hover:text-coral">Blogs</a></li>
-                <li><a href="{% url 'projects:projects_list' %}" class="text-white hover:text-coral">Projects</a></li>
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+
+{% block title %}{{ project.title }} - Project Details{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Image gallery */
+    .gallery-backdrop {
+        backdrop-filter: blur(10px);
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
 
     <!-- Project Detail Section -->
-    <main class="mt-20 px-[8%] py-12">
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto overflow-x-hidden">
         <!-- Navigation Breadcrumbs -->
-        <div class="mb-8 flex items-center gap-2 text-gray-400">
-            <a href="{% url 'home' %}" class="hover:text-coral">Home</a>
-            <i class="fas fa-chevron-right text-xs"></i>
-            <a href="{% url 'projects:projects_list' %}" class="hover:text-coral">Projects</a>
-            <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-coral">{{ project.title }}</span>
-        </div>
-    
-        <!-- Project Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-coral mb-4">{{ project.title }}</h1>
-    
-            <div class="flex flex-wrap items-center gap-4 text-gray-400 mb-6">
-                <span class="flex items-center gap-2">
-                    <i class="fas fa-calendar-alt"></i>
-                    {{ project.created_at|date:"F j, Y" }}
-                </span>
-    
-                {% if project.category %}
-                <span class="flex items-center gap-2">
-                    <i class="fas fa-folder"></i>
-                    {{ project.category.name }}
-                </span>
-                {% endif %}
-    
-                {% if project.featured %}
-                <span class="bg-coral text-white text-xs px-3 py-1 rounded-full">
-                    Featured Project
-                </span>
-                {% endif %}
+        <nav class="mb-8">
+            <ol class="flex items-center flex-wrap">
+                <li>
+                    <a href="{% url 'home' %}" class="text-gray-400 hover:text-white transition-colors duration-200">
+                        <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li class="mx-2 text-gray-600">
+                    <svg class="w-3 h-3 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </li>
+                <li>
+                    <a href="{% url 'projects:projects_list' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Projects</a>
+                </li>
+                <li class="mx-2 text-gray-600">
+                    <svg class="w-3 h-3 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </li>
+                <li>
+                    <span class="bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent font-medium">{{ project.title }}</span>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden mb-10">
+            <!-- Project Header Image -->
+            {% if project.image %}
+            <div class="relative">
+                <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                     class="w-full h-[400px] object-cover">
+                     
+                <!-- Overlay gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-90"></div>
+                
+                <!-- Project title overlay -->
+                <div class="absolute bottom-0 left-0 right-0 p-8">
+                    <!-- Category & Date -->
+                    <div class="flex flex-wrap items-center gap-3 mb-3">
+                        {% if project.category %}
+                        <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300 border border-gray-700/30">
+                            <i class="fas {% if project.category.name == 'Technology' %}fa-microchip{% elif project.category.name == 'Web Development' %}fa-code{% elif project.category.name == 'Mobile Development' %}fa-mobile-alt{% else %}fa-folder{% endif %}"></i>
+                            {{ project.category.name }}
+                        </span>
+                        {% endif %}
+                        
+                        <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300">
+                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            {{ project.created_at|date:"F j, Y" }}
+                        </span>
+                        
+                        {% if project.featured %}
+                        <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            Featured Project
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Project Title -->
+                    <h1 class="text-4xl font-bold text-white mb-4">{{ project.title }}</h1>
+                    
+                    <!-- Technology Tags -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        {% for tech in project.technology_list %}
+                        <span class="text-xs px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300 border border-gray-700/30">
+                            {{ tech }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-    
+            {% else %}
+            <!-- Fallback header if no image -->
+            <div class="p-8 bg-gradient-to-r from-gray-800/50 to-gray-900/50">
+                <!-- Category & Date -->
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                    {% if project.category %}
+                    <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300 border border-gray-700/30">
+                        <i class="fas {% if project.category.name == 'Technology' %}fa-microchip{% elif project.category.name == 'Web Development' %}fa-code{% elif project.category.name == 'Mobile Development' %}fa-mobile-alt{% else %}fa-folder{% endif %}"></i>
+                        {{ project.category.name }}
+                    </span>
+                    {% endif %}
+                    
+                    <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300">
+                        <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        {{ project.created_at|date:"F j, Y" }}
+                    </span>
+                    
+                    {% if project.featured %}
+                    <span class="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        Featured Project
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Project Title -->
+                <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent mb-4">{{ project.title }}</h1>
+                
+                <!-- Technology Tags -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    {% for tech in project.technology_list %}
+                    <span class="text-xs px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300 border border-gray-700/30">
+                        {{ tech }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- Project Links -->
-            <div class="flex flex-wrap gap-3 mb-6">
+            <div class="flex flex-wrap gap-3 p-6 bg-gray-800/20 border-t border-gray-700/30">
                 {% if project.github_link %}
                 <a href="{{ project.github_link }}" target="_blank" 
-                   class="inline-flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
-                    <i class="fab fa-github"></i> View on GitHub
+                   class="inline-flex items-center gap-2 bg-gray-800/80 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors text-gray-300 hover:text-white">
+                    <i class="fab fa-github"></i> View Code
                 </a>
                 {% endif %}
-    
+                
                 {% if project.live_link %}
                 <a href="{{ project.live_link }}" target="_blank" 
-                   class="inline-flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
+                   class="inline-flex items-center gap-2 bg-gradient-to-r from-[#b820e6] to-[#da7d20] px-4 py-2 rounded-lg text-white hover:opacity-90 transition-opacity">
                     <i class="fas fa-external-link-alt"></i> Live Demo
                 </a>
                 {% endif %}
             </div>
         </div>
     
-        <!-- Project Image -->
-        {% if project.image %}
-        <div class="mb-10">
-            <img src="{{ project.image.url }}" alt="{{ project.title }}" 
-                 class="w-full max-h-[500px] object-cover rounded-lg shadow-lg">
-        </div>
-        {% endif %}
-    
         <!-- Project Content -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main Content -->
-            <div class="md:col-span-2">
-                <div class="bg-darkHover p-8 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-semibold mb-6 text-coral border-b border-gray-700 pb-4">
-                        Project Description
-                    </h2>
-    
-                    <div class="prose prose-dark max-w-none">
-                        {% if project.content %}
-                            {{ project.content|safe }}
-                        {% else %}
-                            <p>{{ project.description }}</p>
-                        {% endif %}
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Project Description -->
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/30">
+                        <h2 class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">
+                            Project Description
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="prose prose-invert max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-a:text-[#da7d20] hover:prose-a:text-[#b820e6] prose-a:transition-colors prose-code:bg-gray-800 prose-code:text-gray-200">
+                            {% if project.content %}
+                                {{ project.content|safe }}
+                            {% else %}
+                                <p>{{ project.description }}</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
     
-                <!-- Features Section (if content has features) -->
-                <div class="bg-darkHover p-8 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-semibold mb-6 text-coral border-b border-gray-700 pb-4">
-                        Key Features
-                    </h2>
-    
-                    <ul class="space-y-4">
-                        {% for feature in project.features_list %}
-                        <li class="flex items-start gap-3">
-                            <i class="fas fa-check-circle text-coral mt-1"></i>
-                            <span>{{ feature }}</span>
-                        </li>
-                        {% empty %}
-                        <li class="italic text-gray-400">No features listed for this project.</li>
-                        {% endfor %}
-                    </ul>
+                <!-- Features Section (if project has features) -->
+                {% if project.features_list %}
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/30">
+                        <h2 class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">
+                            Key Features
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <ul class="space-y-4">
+                            {% for feature in project.features_list %}
+                            <li class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-[#b820e6]/20 to-[#da7d20]/20 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-[#da7d20]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-gray-300">{{ feature }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
+                {% endif %}
                 
                 <!-- UI Screenshots Bento Grid -->
                 {% if project.screenshots.exists %}
-                <div class="bg-darkHover p-8 rounded-lg shadow-md mb-8">
-                    <h2 class="text-2xl font-semibold mb-6 text-coral border-b border-gray-700 pb-4">
-                        UI Showcase
-                    </h2>
-                    
-                    <div class="grid grid-cols-4 gap-4 auto-rows-[minmax(100px,_auto)]">
-                        {% for screenshot in project.screenshots.all %}
-                            {% if screenshot.size == 'small' %}
-                                <div class="col-span-1 row-span-1 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
-                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
-                                        <h3 class="text-white font-semibold mb-1">{{ screenshot.title }}</h3>
-                                        <p class="text-white/80 text-sm">{{ screenshot.description|truncatechars:50 }}</p>
-                                    </div>
-                                </div>
-                            {% elif screenshot.size == 'medium' %}
-                                <div class="col-span-2 row-span-1 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
-                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
-                                        <h3 class="text-white font-semibold mb-1">{{ screenshot.title }}</h3>
-                                        <p class="text-white/80 text-sm">{{ screenshot.description|truncatechars:80 }}</p>
-                                    </div>
-                                </div>
-                            {% elif screenshot.size == 'large' %}
-                                <div class="col-span-2 row-span-2 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
-                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
-                                        <h3 class="text-white font-semibold mb-2">{{ screenshot.title }}</h3>
-                                        <p class="text-white/80">{{ screenshot.description|truncatechars:120 }}</p>
-                                    </div>
-                                </div>
-                            {% elif screenshot.size == 'wide' %}
-                                <div class="col-span-4 row-span-1 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
-                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
-                                        <h3 class="text-white font-semibold mb-2">{{ screenshot.title }}</h3>
-                                        <p class="text-white/80">{{ screenshot.description|truncatechars:150 }}</p>
-                                    </div>
-                                </div>
-                            {% elif screenshot.size == 'tall' %}
-                                <div class="col-span-1 row-span-2 group relative overflow-hidden rounded-xl" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
-                                    <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-4">
-                                        <h3 class="text-white font-semibold mb-2">{{ screenshot.title }}</h3>
-                                        <p class="text-white/80">{{ screenshot.description|truncatechars:100 }}</p>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/30 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">
+                            UI Showcase
+                        </h2>
+                        
+                        <!-- View all screenshots button -->
+                        <button id="open-gallery-btn" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 text-sm transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            View Gallery
+                        </button>
                     </div>
                     
-                    <div class="mt-4 text-center">
-                        <button id="open-gallery" class="bg-coral hover:bg-coral/80 text-white px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-expand-alt mr-2"></i> View Full Gallery
-                        </button>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 auto-rows-[minmax(150px,_auto)]">
+                            {% for screenshot in project.screenshots.all %}
+                                {% if screenshot.size == 'small' %}
+                                    <div class="col-span-1 row-span-1 group relative overflow-hidden rounded-lg border border-gray-700/30" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                        <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex flex-col items-center justify-end text-center p-3">
+                                            <h3 class="text-white font-medium text-sm mb-1">{{ screenshot.title }}</h3>
+                                            <p class="text-gray-300 text-xs">{{ screenshot.description|truncatechars:50 }}</p>
+                                        </div>
+                                    </div>
+                                {% elif screenshot.size == 'medium' %}
+                                    <div class="col-span-1 sm:col-span-2 row-span-1 group relative overflow-hidden rounded-lg border border-gray-700/30" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                        <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex flex-col items-center justify-end text-center p-4">
+                                            <h3 class="text-white font-medium text-sm mb-1">{{ screenshot.title }}</h3>
+                                            <p class="text-gray-300 text-xs">{{ screenshot.description|truncatechars:80 }}</p>
+                                        </div>
+                                    </div>
+                                {% elif screenshot.size == 'large' %}
+                                    <div class="col-span-1 sm:col-span-2 md:col-span-2 row-span-2 group relative overflow-hidden rounded-lg border border-gray-700/30" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                        <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex flex-col items-center justify-end text-center p-4">
+                                            <h3 class="text-white font-medium mb-1">{{ screenshot.title }}</h3>
+                                            <p class="text-gray-300 text-sm">{{ screenshot.description|truncatechars:120 }}</p>
+                                        </div>
+                                    </div>
+                                {% elif screenshot.size == 'wide' %}
+                                    <div class="col-span-1 sm:col-span-2 md:col-span-3 row-span-1 group relative overflow-hidden rounded-lg border border-gray-700/30" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                        <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex flex-col items-center justify-end text-center p-4">
+                                            <h3 class="text-white font-medium mb-1">{{ screenshot.title }}</h3>
+                                            <p class="text-gray-300 text-sm">{{ screenshot.description|truncatechars:100 }}</p>
+                                        </div>
+                                    </div>
+                                {% elif screenshot.size == 'tall' %}
+                                    <div class="col-span-1 row-span-1 sm:row-span-2 group relative overflow-hidden rounded-lg border border-gray-700/30" data-title="{{ screenshot.title }}" data-description="{{ screenshot.description }}">
+                                        <img src="{{ screenshot.image.url }}" alt="{{ screenshot.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex flex-col items-center justify-end text-center p-4">
+                                            <h3 class="text-white font-medium mb-1">{{ screenshot.title }}</h3>
+                                            <p class="text-gray-300 text-sm">{{ screenshot.description|truncatechars:80 }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}
             </div>
     
             <!-- Sidebar -->
-            <div class="md:col-span-1">
-                <!-- Technologies -->
-                <div class="bg-darkHover p-6 rounded-lg shadow-md mb-6">
-                    <h3 class="text-xl font-semibold mb-4 text-coral border-b border-gray-700 pb-3">
-                        Technologies Used
-                    </h3>
-    
-                    <div class="flex flex-wrap gap-2">
-                        {% for tech in project.technology_list %}
-                        <span class="bg-darkTheme text-coral text-sm px-3 py-1 rounded-full border border-gray-700">
-                            {{ tech }}
-                        </span>
-                        {% empty %}
-                        <span class="italic text-gray-400">No technologies listed.</span>
+            <div class="space-y-8">
+                <!-- Project Info Card -->
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/30">
+                        <h2 class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">
+                            Project Details
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <!-- Project Status -->
+                        <div>
+                            <span class="text-gray-400 text-sm block mb-2">Status:</span>
+                            {% if project.status == 'completed' %}
+                            <span class="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1.5 bg-green-900/70 text-green-300">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                {{ project.get_status_display }}
+                            </span>
+                            {% elif project.status == 'in_progress' %}
+                            <span class="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1.5 bg-blue-900/70 text-blue-300">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 8l-7 7-7-7"></path>
+                                </svg>
+                                {{ project.get_status_display }}
+                            </span>
+                            {% elif project.status == 'planned' %}
+                            <span class="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1.5 bg-purple-900/70 text-purple-300">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ project.get_status_display }}
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1.5 bg-gray-800 text-gray-300">
+                                {{ project.get_status_display }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Categories -->
+                        <div>
+                            <span class="text-gray-400 text-sm block mb-2">Categories:</span>
+                            <div class="flex flex-wrap gap-2">
+                                {% for category in project.categories.all %}
+                                <a href="{% url 'projects:projects_by_category' category_slug=category.slug %}" class="bg-gray-800/70 hover:bg-gray-700 px-3 py-1 rounded-full text-sm text-gray-300 hover:text-white transition-colors">
+                                    {{ category.name }}
+                                </a>
+                                {% empty %}
+                                <span class="text-gray-500 italic">No categories</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Technologies -->
+                        <div>
+                            <span class="text-gray-400 text-sm block mb-2">Technologies:</span>
+                            <div class="flex flex-wrap gap-2">
+                                {% for tech in project.technologies.all %}
+                                <span class="bg-gray-800/70 px-3 py-1 rounded-full text-sm text-gray-300">
+                                    {{ tech.name }}
+                                </span>
+                                {% empty %}
+                                <span class="text-gray-500 italic">No technologies listed</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Client -->
+                        {% if project.client %}
+                        <div>
+                            <span class="text-gray-400 text-sm block mb-2">Client:</span>
+                            <span class="text-gray-300">{{ project.client }}</span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Timeline -->
+                        <div>
+                            <span class="text-gray-400 text-sm block mb-2">Timeline:</span>
+                            <div class="flex items-center gap-2 text-gray-300">
+                                <span>{{ project.start_date|date:"M Y" }}</span>
+                                <span class="text-gray-500">—</span>
+                                <span>{% if project.end_date %}{{ project.end_date|date:"M Y" }}{% else %}Present{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Actions -->
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/30">
+                        <h2 class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">
+                            Project Actions
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6 space-y-3">
+                        {% if project.live_url %}
+                        <a href="{{ project.live_url }}" target="_blank" rel="noopener" class="bg-gradient-to-r from-[#b820e6] to-[#da7d20] hover:from-[#a71dd0] hover:to-[#c56f1c] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 w-full justify-center transition-all duration-300">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            View Live Project
+                        </a>
+                        {% endif %}
+                        
+                        {% if project.github_url %}
+                        <a href="{{ project.github_url }}" target="_blank" rel="noopener" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 hover:text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 w-full justify-center transition-colors">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.085 1.838 1.236 1.838 1.236 1.07 1.836 2.809 1.305 3.495.998.108-.775.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
+                            </svg>
+                            View Source Code
+                        </a>
+                        {% endif %}
+                        
+                        {% if project.figma_url %}
+                        <a href="{{ project.figma_url }}" target="_blank" rel="noopener" class="bg-gray-800/70 hover:bg-gray-700 text-gray-300 hover:text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 w-full justify-center transition-colors">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 57" fill="currentColor">
+                                <path d="M19 28.5C19 25.8 20.0116 23.2332 21.7746 21.3396C23.5376 19.4461 25.917 18.3333 28.5 18.3333C31.083 18.3333 33.4624 19.4461 35.2254 21.3396C36.9884 23.2332 38 25.8 38 28.5C38 31.2 36.9884 33.7668 35.2254 35.6604C33.4624 37.5539 31.083 38.6667 28.5 38.6667C25.917 38.6667 23.5376 37.5539 21.7746 35.6604C20.0116 33.7668 19 31.2 19 28.5Z"/>
+                                <path d="M0 47.5C0 44.8 1.01156 42.2332 2.77462 40.3396C4.53767 38.4461 6.91701 37.3333 9.5 37.3333H19V47.5C19 50.2 17.9884 52.7668 16.2254 54.6604C14.4623 56.5539 12.083 57.6667 9.5 57.6667C6.91701 57.6667 4.53767 56.5539 2.77462 54.6604C1.01156 52.7668 0 50.2 0 47.5Z"/>
+                                <path d="M19 0V18.3333H28.5C31.083 18.3333 33.4624 17.2206 35.2254 15.3271C36.9884 13.4335 38 10.8667 38 8.16667C38 5.46667 36.9884 2.89986 35.2254 1.00628C33.4624 -0.887294 31.083 -2 28.5 -2C25.917 -2 23.5376 -0.887294 21.7746 1.00628C20.0116 2.89986 19 5.46667 19 8.16667"/>
+                                <path d="M0 8.16667C0 10.8667 1.01156 13.4335 2.77462 15.3271C4.53767 17.2206 6.91701 18.3333 9.5 18.3333H19V-2C19 -2 19 -2 19 -2H9.5C6.91701 -2 4.53767 -0.887294 2.77462 1.00628C1.01156 2.89986 0 5.46667 0 8.16667Z"/>
+                                <path d="M0 28.5C0 31.2 1.01156 33.7668 2.77462 35.6604C4.53767 37.5539 6.91701 38.6667 9.5 38.6667H19V18.3333H9.5C6.91701 18.3333 4.53767 19.4461 2.77462 21.3396C1.01156 23.2332 0 25.8 0 28.5Z"/>
+                            </svg>
+                            View Design
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Related Projects -->
+                {% if related_projects %}
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden">
+                    <div class="p-6 border-b border-gray-700/30">
+                        <h2 class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">
+                            Related Projects
+                        </h2>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-700/30">
+                        {% for related in related_projects %}
+                        <a href="{% url 'projects:project_detail' related.slug %}" class="block hover:bg-gray-800/50 p-4 transition-colors">
+                            <div class="flex gap-3 items-center">
+                                {% if related.thumbnail %}
+                                <img src="{{ related.thumbnail.url }}" alt="{{ related.title }}" class="w-16 h-12 object-cover rounded">
+                                {% else %}
+                                <div class="w-16 h-12 bg-gray-800/70 rounded flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                    </svg>
+                                </div>
+                                {% endif %}
+                                
+                                <div>
+                                    <h3 class="font-medium line-clamp-1 text-gray-300 hover:text-white transition-colors">{{ related.title }}</h3>
+                                    <div class="flex gap-2 text-xs text-gray-500">
+                                        {% for category in related.categories.all|slice:":2" %}
+                                        <span>{{ category.name }}</span>
+                                        {% if not forloop.last %}<span>•</span>{% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                         {% endfor %}
                     </div>
                 </div>
-    
-                <!-- Project Timeline -->
-                <div class="bg-darkHover p-6 rounded-lg shadow-md mb-6">
-                    <h3 class="text-xl font-semibold mb-4 text-coral border-b border-gray-700 pb-3">
-                        Project Timeline
-                    </h3>
-    
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-hourglass-start text-coral mt-1"></i>
-                            <div>
-                                <h4 class="font-medium">Started</h4>
-                                <p class="text-gray-400 text-sm">{{ project.created_at|date:"F j, Y" }}</p>
-                            </div>
-                        </div>
-    
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-hourglass-end text-coral mt-1"></i>
-                            <div>
-                                <h4 class="font-medium">Last Updated</h4>
-                                <p class="text-gray-400 text-sm">{{ project.updated_at|date:"F j, Y" }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <!-- Call to Action -->
-                <div class="bg-coral p-6 rounded-lg shadow-md text-center">
-                    <h3 class="text-xl font-semibold mb-3 text-white">Interested in this project?</h3>
-                    <p class="text-white/90 mb-4">Let's discuss how we can work together on something similar.</p>
-                    <a href="/contact" class="inline-block bg-white text-coral font-medium px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">
-                        Contact Me
-                    </a>
-                </div>
+                {% endif %}
             </div>
-        </div>
-    
-        <!-- Related Projects -->
-        {% if related_projects %}
-        <div class="mt-16">
-            <h2 class="text-3xl font-bold text-coral mb-8">Related Projects</h2>
-    
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for related in related_projects %}
-                <div class="bg-darkHover p-6 rounded-lg shadow-md hover:shadow-lg transition">
-                    {% if related.image %}
-                    <div class="mb-4 overflow-hidden rounded-lg">
-                        <img src="{{ related.image.url }}" alt="{{ related.title }}" 
-                             class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
-                    </div>
-                    {% endif %}
-    
-                    <h3 class="text-xl font-semibold mb-2 text-coral">
-                        <a href="{% url 'projects:project_detail' related.slug %}" class="hover:underline">
-                            {{ related.title }}
-                        </a>
-                    </h3>
-    
-                    <p class="text-gray-400 mb-4">{{ related.description|truncatechars:100 }}</p>
-    
-                    <a href="{% url 'projects:project_detail' related.slug %}" 
-                       class="inline-flex items-center gap-2 text-coral hover:text-coral/80 transition-colors">
-                        View Project <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    </main>
 
-    <!-- Footer -->
-    <footer class="mx-auto flex w-full flex-col px-[8%] text-white">
-        <div class="flex flex-col md:flex-row justify-between py-10 border-t border-gray-800">
-            <div class="mb-8 md:mb-0">
-                <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-36 mb-4">
-                <p class="text-gray-400 max-w-sm">Showcasing innovative projects and solutions through elegant design and robust engineering.</p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 text-coral">Navigation</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="{% url 'home' %}" class="hover:text-coral transition-colors">Home</a></li>
-                        <li><a href="/about" class="hover:text-coral transition-colors">About</a></li>
-                        <li><a href="{% url 'blog:blog_list' %}" class="hover:text-coral transition-colors">Blog</a></li>
-                        <li><a href="{% url 'projects:projects_list' %}" class="hover:text-coral transition-colors">Projects</a></li>
-                        <li><a href="/contact" class="hover:text-coral transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 text-coral">Connect</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-github mr-2"></i> GitHub</a></li>
-                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-linkedin mr-2"></i> LinkedIn</a></li>
-                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-twitter mr-2"></i> Twitter</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 text-coral">Contact</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><i class="fas fa-envelope mr-2"></i> contact@example.com</li>
-                        <li><i class="fas fa-phone mr-2"></i> +1 (123) 456-7890</li>
-                        <li><i class="fas fa-map-marker-alt mr-2"></i> New York, NY</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="py-6 text-center border-t border-gray-800">
-            <p class="text-gray-500">&copy; {% now "Y" %} Mustafa's Portfolio. All rights reserved.</p>
-        </div>
-    </footer>
 
     <!-- Gallery Modal -->
-    <div id="gallery-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-90 flex items-center justify-center">
-        <button id="close-gallery" class="absolute top-4 right-4 text-white text-2xl hover:text-coral">
-            <i class="fas fa-times"></i>
-        </button>
-        
-        <button id="prev-image" class="absolute left-4 text-white text-3xl hover:text-coral">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        
-        <button id="next-image" class="absolute right-4 text-white text-3xl hover:text-coral">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        
-        <div class="w-full max-w-6xl px-4">
-            <div id="gallery-image-container" class="relative">
-                <img id="gallery-image" class="mx-auto max-h-[80vh] max-w-full rounded-lg" src="" alt="">
+    <div id="gallery-modal" class="fixed inset-0 z-50 hidden gallery-backdrop flex items-center justify-center">
+        <!-- Modal header -->
+        <div class="absolute top-0 left-0 right-0 p-4 bg-gray-900/80 backdrop-blur-md z-10 border-b border-gray-700/30">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <h2 id="gallery-header-title" class="text-xl font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">Project Screenshots</h2>
                 
-                <div id="gallery-caption" class="mt-4 text-center">
-                    <h3 id="gallery-title" class="text-xl font-semibold text-white mb-2"></h3>
-                    <p id="gallery-description" class="text-gray-300"></p>
-                </div>
-            </div>
-            
-            <div class="mt-6 overflow-x-auto whitespace-nowrap pb-2" id="thumbnail-container">
-                <!-- Thumbnails will be added here dynamically -->
+                <button id="close-gallery" class="p-2 rounded-full bg-gray-800/70 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
         </div>
+        
+        <!-- Navigation controls -->
+        <button id="prev-image" class="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-gray-800/70 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        
+        <button id="next-image" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-gray-800/70 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </button>
+        
+        <!-- Main content -->
+        <div class="w-full h-full pt-20 pb-24 overflow-y-auto">
+            <div class="max-w-6xl mx-auto px-4">
+                <div id="gallery-image-container" class="relative bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden p-2 mb-4">
+                    <img id="gallery-image" class="mx-auto max-h-[70vh] max-w-full rounded-lg" src="" alt="">
+                </div>
+                
+                <div id="gallery-caption" class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 overflow-hidden mb-6">
+                    <div class="p-4 border-b border-gray-700/30">
+                        <h3 id="gallery-title" class="text-xl font-medium text-white"></h3>
+                    </div>
+                    <div class="p-4">
+                        <p id="gallery-description" class="text-gray-300"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Thumbnails footer -->
+    
     </div>
     
     <!-- Scripts -->
@@ -383,11 +516,12 @@
             
             // Gallery functionality
             const galleryModal = document.getElementById('gallery-modal');
-            const openGalleryBtn = document.getElementById('open-gallery');
+            const openGalleryBtn = document.getElementById('open-gallery-btn');
             const closeGalleryBtn = document.getElementById('close-gallery');
             const galleryImage = document.getElementById('gallery-image');
             const galleryTitle = document.getElementById('gallery-title');
             const galleryDescription = document.getElementById('gallery-description');
+            const galleryHeaderTitle = document.getElementById('gallery-header-title');
             const prevBtn = document.getElementById('prev-image');
             const nextBtn = document.getElementById('next-image');
             const thumbnailContainer = document.getElementById('thumbnail-container');
@@ -415,14 +549,15 @@
                 galleryImage.alt = screenshot.title;
                 galleryTitle.textContent = screenshot.title;
                 galleryDescription.textContent = screenshot.description;
+                galleryHeaderTitle.textContent = `Project Screenshots (${currentIndex + 1}/${screenshots.length})`;
                 
                 // Highlight current thumbnail
                 const thumbnails = thumbnailContainer.querySelectorAll('.thumbnail');
                 thumbnails.forEach((thumb, i) => {
                     if (i === index) {
-                        thumb.classList.add('ring-2', 'ring-coral', 'ring-offset-2', 'ring-offset-black');
+                        thumb.classList.add('ring-2', 'ring-[#da7d20]', 'ring-offset-1', 'ring-offset-gray-900', 'scale-110');
                     } else {
-                        thumb.classList.remove('ring-2', 'ring-coral', 'ring-offset-2', 'ring-offset-black');
+                        thumb.classList.remove('ring-2', 'ring-[#da7d20]', 'ring-offset-1', 'ring-offset-gray-900', 'scale-110');
                     }
                 });
             }
@@ -432,7 +567,7 @@
                 thumbnailContainer.innerHTML = '';
                 screenshots.forEach((screenshot, index) => {
                     const thumb = document.createElement('div');
-                    thumb.className = 'thumbnail inline-block h-16 w-24 mx-1 rounded cursor-pointer overflow-hidden transition-all duration-200';
+                    thumb.className = 'thumbnail h-16 w-24 rounded-lg cursor-pointer overflow-hidden transition-all duration-300 border border-gray-700/50 flex-shrink-0';
                     thumb.innerHTML = `<img src="${screenshot.img}" alt="${screenshot.title}" class="w-full h-full object-cover">`;
                     
                     thumb.addEventListener('click', () => showImage(index));
@@ -489,5 +624,135 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Gallery functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gallery functionality
+        const galleryModal = document.getElementById('gallery-modal');
+        const openGalleryBtn = document.getElementById('open-gallery-btn');
+        const closeGalleryBtn = document.getElementById('close-gallery');
+        const galleryImage = document.getElementById('gallery-image');
+        const galleryTitle = document.getElementById('gallery-title');
+        const galleryDescription = document.getElementById('gallery-description');
+        const galleryHeaderTitle = document.getElementById('gallery-header-title');
+        const prevBtn = document.getElementById('prev-image');
+        const nextBtn = document.getElementById('next-image');
+        const thumbnailContainer = document.getElementById('thumbnail-container');
+        
+        // Check if gallery elements exist before proceeding
+        if (!galleryModal || !openGalleryBtn) return;
+        
+        // Collect all screenshots
+        const screenshots = Array.from(document.querySelectorAll('.grid > div[data-title]')).map(el => ({
+            img: el.querySelector('img').src,
+            title: el.dataset.title,
+            description: el.dataset.description
+        }));
+        
+        let currentIndex = 0;
+        
+        function showImage(index) {
+            if (index < 0) index = screenshots.length - 1;
+            if (index >= screenshots.length) index = 0;
+            
+            currentIndex = index;
+            const screenshot = screenshots[index];
+            
+            galleryImage.src = screenshot.img;
+            galleryImage.alt = screenshot.title;
+            galleryTitle.textContent = screenshot.title;
+            galleryDescription.textContent = screenshot.description || '';
+            
+            // Update active thumbnail
+            const thumbnails = thumbnailContainer.querySelectorAll('.thumbnail');
+            thumbnails.forEach((thumb, i) => {
+                if (i === index) {
+                    thumb.classList.add('ring-2', 'ring-[#da7d20]');
+                } else {
+                    thumb.classList.remove('ring-2', 'ring-[#da7d20]');
+                }
+            });
+        }
+        
+        function createThumbnails() {
+            thumbnailContainer.innerHTML = '';
+            
+            screenshots.forEach((screenshot, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail w-24 h-16 flex-shrink-0 cursor-pointer rounded-lg overflow-hidden transition-all duration-200 hover:opacity-100';
+                if (index === currentIndex) {
+                    thumbnail.classList.add('ring-2', 'ring-[#da7d20]');
+                } else {
+                    thumbnail.classList.add('opacity-70');
+                }
+                
+                const img = document.createElement('img');
+                img.src = screenshot.img;
+                img.alt = screenshot.title;
+                img.className = 'w-full h-full object-cover';
+                
+                thumbnail.appendChild(img);
+                thumbnailContainer.appendChild(thumbnail);
+                
+                thumbnail.addEventListener('click', function() {
+                    showImage(index);
+                });
+            });
+        }
+        
+        // Open gallery
+        openGalleryBtn.addEventListener('click', function() {
+            galleryModal.classList.remove('hidden');
+            galleryHeaderTitle.textContent = 'Project Screenshots';
+            currentIndex = 0;
+            createThumbnails();
+            showImage(currentIndex);
+            document.body.classList.add('overflow-hidden');
+        });
+        
+        // Open gallery from grid item
+        document.querySelectorAll('.grid > div[data-title]').forEach((el, index) => {
+            el.addEventListener('click', function() {
+                galleryModal.classList.remove('hidden');
+                galleryHeaderTitle.textContent = 'Project Screenshots';
+                createThumbnails();
+                showImage(index);
+                document.body.classList.add('overflow-hidden');
+            });
+        });
+        
+        // Close gallery
+        closeGalleryBtn.addEventListener('click', function() {
+            galleryModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        });
+        
+        // Previous image
+        prevBtn.addEventListener('click', function() {
+            showImage(currentIndex - 1);
+        });
+        
+        // Next image
+        nextBtn.addEventListener('click', function() {
+            showImage(currentIndex + 1);
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (galleryModal.classList.contains('hidden')) return;
+            
+            if (e.key === 'Escape') {
+                galleryModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            } else if (e.key === 'ArrowLeft') {
+                showImage(currentIndex - 1);
+            } else if (e.key === 'ArrowRight') {
+                showImage(currentIndex + 1);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -8,12 +8,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1bc3dlo&@)a_ccz*19)5rru*+-%a8di-b1zxdhi6te%ctcr!&y'
+import os
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-1bc3dlo&@)a_ccz*19)5rru*+-%a8di-b1zxdhi6te%ctcr!&y')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+# Set allowed hosts based on environment
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',  # Added WhiteNoise
     'blog',
     'users',
     'backup',
@@ -71,7 +74,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'blog.middleware.ImageOptimizationMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Added WhiteNoise middleware
 ]
+
+WHITENOISE_USE_FINDERS = True
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'PortfolioProject.urls'
 
@@ -103,12 +110,21 @@ CHANNEL_LAYERS = {
     },
 }
 
+# Database configuration with SQLite locally and support for PostgreSQL in production
+import dj_database_url
+
+# Default SQLite database for development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# Use production database URL from environment variable if available
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    DATABASES['default'] = dj_database_url.parse(database_url)
 
 # Static and Media settings
 STATIC_URL = '/static/'

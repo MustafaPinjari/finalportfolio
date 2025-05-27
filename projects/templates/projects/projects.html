@@ -1,80 +1,53 @@
+{% extends 'projects/project_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-    <!-- Add CSRF token meta tag for AJAX requests -->
-    <meta name="csrf-token" content="{{ csrf_token }}">
-</head>
-<body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
-    <!-- Navbar -->
-    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-darkTheme shadow-sm">
-        <!-- Logo -->
-        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
-    
-        <!-- Menu Items (Hidden on Mobile) -->
-        <ul class="hidden md:flex gap-6">
-            <li><a href="{% url 'home' %}" class="hover:text-lightHover" style="color: #ff7f50;">Home</a></li>
-            <li><a href="/about" class="hover:text-lightHover" style="color: #ff7f50;">About</a></li>
-            <li><a href="{% url 'blog:blog_list' %}" class="hover:text-lightHover" style="color: #ff7f50;">Blogs</a></li>
-            <li><a href="{% url 'projects:projects_list' %}" class="hover:text-lightHover font-bold" style="color: #ff7f50;">Projects</a></li>
-            <li><a href="/contact" class="hover:text-lightHover" style="color: #ff7f50;">Contact</a></li>
-        </ul>
-    
-        <!-- Hamburger Icon (Visible on Mobile) -->
-        <button id="menu-button" class="md:hidden text-3xl text-coral focus:outline-none">
-            &#9776; <!-- Hamburger Icon -->
-        </button>
-    
-        <!-- Sidebar -->
-        <div id="sidebar" class="fixed top-0 right-0 w-64 h-full bg-darkTheme shadow-lg transform translate-x-full transition-transform duration-300">
-            <button id="close-sidebar" class="absolute top-4 right-4 text-2xl text-white focus:outline-none">
-                &times; <!-- Close Icon -->
-            </button>
-            <ul class="mt-20 flex flex-col gap-6 px-6">
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Home</a></li>
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">About</a></li>
-                <li><a href="{% url 'blog:blog_list' %}" class="text-white hover:text-coral">Blogs</a></li>
-                <li><a href="{% url 'projects:projects_list' %}" class="text-white hover:text-coral">Projects</a></li>
-                <li><a href="{% url 'home' %}" class="text-white hover:text-coral">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+
+{% block title %}Projects{% endblock %}
+
+{% block content %}
 
     <!-- Projects List -->
-    <main class="mt-20 px-[8%] py-12">
-        <h1 class="text-4xl font-bold text-coral mb-8">My Projects</h1>
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto overflow-x-hidden">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-10">
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent mb-4 md:mb-0">My Projects</h1>
+            
+            <div class="inline-flex items-center px-3 py-1.5 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50">
+                <span class="text-gray-400 mr-2">Sort by:</span>
+                <select class="bg-transparent text-white focus:outline-none">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+        </div>
         
         <!-- Categories -->
-        <div class="mb-12">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-coral">Filter by Category</h2>
+        <div class="mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-white">Filter by Category</h2>
                 <div class="flex gap-2">
-                    <button class="nav-arrow" onclick="scrollCategories('left')">
-                        <i class="fas fa-chevron-left"></i>
+                    <button class="p-2 rounded-full bg-gray-800/50 backdrop-blur-sm text-gray-400 hover:text-white transition-colors" onclick="scrollCategories('left')">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
                     </button>
-                    <button class="nav-arrow" onclick="scrollCategories('right')">
-                        <i class="fas fa-chevron-right"></i>
+                    <button class="p-2 rounded-full bg-gray-800/50 backdrop-blur-sm text-gray-400 hover:text-white transition-colors" onclick="scrollCategories('right')">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
-            <div class="categories-container">
-                <div class="categories-wrapper">
-                    <a href="{% url 'projects:projects_list' %}" 
-                       class="topic-btn {% if not selected_category %}active{% endif %}">
-                        <i class="fas fa-globe"></i>
-                        <span>All Projects</span>
-                    </a>
-                    {% for category in categories %}
+            <div class="relative">
+                <div class="overflow-x-auto custom-scrollbar pb-2">
+                    <div class="categories-wrapper inline-flex gap-3 min-w-full">
+                        <a href="{% url 'projects:projects_list' %}" 
+                           class="flex items-center gap-2 px-4 py-2 rounded-lg {% if not selected_category %}bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white{% else %}bg-gray-800/50 backdrop-blur-sm text-gray-300 hover:text-white{% endif %} transition-all duration-200">
+                            <i class="fas fa-globe"></i>
+                            <span>All Projects</span>
+                        </a>
+                        {% for category in categories %}
                     <a href="?category={{ category.slug }}" 
-                       class="topic-btn {% if selected_category == category.slug %}active{% endif %}">
+                       class="flex items-center gap-2 px-4 py-2 rounded-lg {% if selected_category == category.slug %}bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white{% else %}bg-gray-800/50 backdrop-blur-sm text-gray-300 hover:text-white{% endif %} transition-all duration-200">
                         <i class="fas {% if category.name == 'Technology' %}fa-microchip
                                   {% elif category.name == 'Web Development' %}fa-code
                                   {% elif category.name == 'Mobile Development' %}fa-mobile-alt
@@ -86,9 +59,10 @@
                                   {% elif category.name == 'Cybersecurity' %}fa-shield-alt
                                   {% elif category.name == 'Blockchain' %}fa-link
                                   {% elif category.name == 'IoT' %}fa-network-wired
-                                  {% elif category.name == 'Software Engineering' %}fa-cogs
-                                  {% elif category.name == 'UI/UX Design' %}fa-pencil-ruler
-                                  {% elif category.name == 'Frontend Development' %}fa-laptop-code
+                                  {% elif category.name == 'Robotics' %}fa-robot
+                                  {% elif category.name == 'Software Engineering' %}fa-laptop-code
+                                  {% elif category.name == 'UI/UX Design' %}fa-palette
+                                  {% elif category.name == 'Frontend Development' %}fa-desktop
                                   {% elif category.name == 'Backend Development' %}fa-database
                                   {% else %}fa-folder{% endif %}"></i>
                         <span>{{ category.name }}</span>
@@ -99,119 +73,112 @@
         </div>
     
         <!-- Projects Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {% for project in projects %}
-            <div class="bg-darkHover p-6 rounded-lg shadow-md hover:shadow-lg transition relative overflow-hidden group">
-                {% if project.featured %}
-                <span class="absolute top-4 right-4 bg-coral text-white text-xs px-2 py-1 rounded-full">Featured</span>
-                {% endif %}
-                
+            <div class="bg-gray-800/50 backdrop-blur-lg rounded-xl border border-gray-700/30 overflow-hidden group hover:shadow-xl hover:shadow-[#b820e6]/5 hover:border-gray-700/50 transition-all duration-300">
                 {% if project.image %}
-                <div class="relative overflow-hidden rounded-lg mb-4">
+                <div class="relative overflow-hidden aspect-video">
                     <img src="{{ project.image.url }}" alt="{{ project.title }}" 
-                         class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <!-- View project details button -->
-                        <a href="{% url 'projects:project_detail' project.slug %}" class="text-white hover:text-coral transition-colors bg-coral/80 hover:bg-coral px-4 py-2 rounded-lg">
-                            <i class="fas fa-eye mr-2"></i> View Details
-                        </a>
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    
+                    {% if project.featured %}
+                    <div class="absolute top-4 right-4">
+                        <span class="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-gradient-to-r from-[#b820e6] to-[#da7d20] text-white">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                            Featured
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="absolute top-4 left-4">
+                        {% if project.category %}
+                        <span class="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-800/70 backdrop-blur-sm text-gray-300">
+                            <i class="fas {% if project.category.name == 'Technology' %}fa-microchip{% elif project.category.name == 'Web Development' %}fa-code{% elif project.category.name == 'Mobile Development' %}fa-mobile-alt{% else %}fa-folder{% endif %} mr-1"></i>
+                            {{ project.category.name }}
+                        </span>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
                 
-                <!-- Clickable project title that redirects to detail page -->
-                <h2 class="text-2xl font-semibold mb-2 text-coral">
-                    <a href="{% url 'projects:project_detail' project.slug %}" class="hover:underline">
-                        {{ project.title }}
-                    </a>
-                </h2>
-                
-                <p class="text-gray-400 text-sm mb-4">
-                    {% if project.category %}
-                    In {{ project.category.name }} | {{ project.created_at|date:"F j, Y" }}
-                    {% else %}
-                    {{ project.created_at|date:"F j, Y" }}
-                    {% endif %}
-                </p>
-                
-                <p class="text-gray-300 mb-4">{{ project.description|truncatechars:150 }}</p>
-                
-                <!-- Technologies Tags -->
-                <div class="mb-4 flex flex-wrap gap-2">
-                    {% for tech in project.technology_list %}
-                    <span class="bg-darkTheme text-coral text-xs px-3 py-1 rounded-full border border-gray-700">
-                        {{ tech }}
-                    </span>
-                    {% endfor %}
-                </div>
-                
-                <!-- Project Links -->
-                <div class="flex flex-wrap gap-2 justify-between items-center mt-4">
-                    <!-- View Details Button -->
-                    <a href="{% url 'projects:project_detail' project.slug %}" 
-                       class="inline-flex items-center gap-2 text-white bg-coral hover:bg-coral/80 px-4 py-2 rounded-lg transition-colors">
-                        <i class="fas fa-eye"></i> View Details
-                    </a>
+                <div class="p-6">
+                    <!-- Project Title -->
+                    <h2 class="text-xl font-semibold mb-3">
+                        <a href="{% url 'projects:project_detail' project.slug %}" class="bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent hover:opacity-90 transition-opacity">
+                            {{ project.title }}
+                        </a>
+                    </h2>
                     
-                    <div class="flex gap-2">
-                        {% if project.github_link %}
-                        <a href="{{ project.github_link }}" target="_blank" 
-                           class="inline-flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
-                            <i class="fab fa-github"></i> Code
+                    <!-- Project Date -->
+                    <p class="text-gray-400 text-sm mb-4">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            {{ project.created_at|date:"F j, Y" }}
+                        </span>
+                    </p>
+                    
+                    <!-- Project Description -->
+                    <p class="text-gray-300 mb-5">{{ project.description|truncatechars:120 }}</p>
+                    
+                    <!-- Technologies Tags -->
+                    <div class="mb-6 flex flex-wrap gap-2">
+                        {% for tech in project.technology_list %}
+                        <span class="text-xs px-2.5 py-1 rounded-full bg-gray-700/50 text-gray-300 border border-gray-700/50">
+                            {{ tech }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Project Actions -->
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-700/30">
+                        <a href="{% url 'projects:project_detail' project.slug %}" 
+                           class="inline-flex items-center gap-1.5 text-white bg-gradient-to-r from-[#b820e6] to-[#da7d20] px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            View Details
                         </a>
-                        {% endif %}
                         
-                        {% if project.live_link %}
-                        <a href="{{ project.live_link }}" target="_blank" 
-                           class="inline-flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-external-link-alt"></i> Demo
-                        </a>
-                        {% endif %}
+                        <div class="flex gap-2">
+                            {% if project.github_link %}
+                            <a href="{{ project.github_link }}" target="_blank" 
+                               class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-700/50 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors" aria-label="View Code">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            {% endif %}
+                            
+                            {% if project.live_link %}
+                            <a href="{{ project.live_link }}" target="_blank" 
+                               class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-700/50 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors" aria-label="View Demo">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <div class="col-span-full text-center py-20">
-                <i class="fas fa-project-diagram text-5xl text-gray-600 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-500">No projects found</h3>
-                <p class="text-gray-400 mt-2">Check back later for updates or try a different category.</p>
+            <div class="col-span-full py-16">
+                <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl border border-gray-700/30 p-8 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-gray-800/50 flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">No projects found</h3>
+                    <p class="text-gray-400 max-w-md">We couldn't find any projects matching your criteria. Try selecting a different category or check back later for updates.</p>
+                </div>
             </div>
             {% endfor %}
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="mx-auto flex w-full flex-col px-[8%] text-white">
-        <div class="flex flex-col md:flex-row justify-between py-10 border-t border-gray-800">
-            <div class="mb-8 md:mb-0">
-                <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-36 mb-4">
-                <p class="text-gray-400 max-w-sm">Showcasing innovative projects and solutions through elegant design and robust engineering.</p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 text-coral">Navigation</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="{% url 'home' %}" class="hover:text-coral transition-colors">Home</a></li>
-                        <li><a href="/about" class="hover:text-coral transition-colors">About</a></li>
-                        <li><a href="{% url 'blog:blog_list' %}" class="hover:text-coral transition-colors">Blog</a></li>
-                        <li><a href="{% url 'projects:projects_list' %}" class="hover:text-coral transition-colors">Projects</a></li>
-                        <li><a href="/contact" class="hover:text-coral transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 text-coral">Connect</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-github mr-2"></i> GitHub</a></li>
-                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-linkedin mr-2"></i> LinkedIn</a></li>
-                        <li><a href="#" class="hover:text-coral transition-colors"><i class="fab fa-twitter mr-2"></i> Twitter</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="py-6 text-center border-t border-gray-800 text-gray-500 text-sm">
-            <p>&copy; {% now "Y" %} Portfolio. All rights reserved.</p>
-        </div>
-    </footer>
+    
 
     <!-- Scripts -->
     <script>
@@ -253,5 +220,37 @@
             }
         }
     </script>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Additional scripts specific to the projects list page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Category filter buttons logic
+        const filterButtons = document.querySelectorAll('.category-filter');
+        if (filterButtons.length > 0) {
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    
+                    // Update active state on buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter projects
+                    const projects = document.querySelectorAll('.project-card');
+                    projects.forEach(project => {
+                        const projectCategories = project.dataset.categories.split(',');
+                        
+                        if (category === 'all' || projectCategories.includes(category)) {
+                            project.classList.remove('hidden');
+                        } else {
+                            project.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

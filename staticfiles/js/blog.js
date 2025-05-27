@@ -119,3 +119,41 @@ function getCookie(name) {
     
     return cookieValue;
 }
+
+// Handle comment form submission via AJAX
+document.addEventListener('DOMContentLoaded', function() {
+    const commentForm = document.getElementById('comment-form');
+    
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            const formData = new FormData(commentForm);
+            const postSlug = window.location.pathname.split('/').filter(segment => segment).pop();
+            
+            fetch(window.location.pathname, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Clear the comment form
+                    commentForm.reset();
+                    
+                    // Reload the page to show the new comment
+                    // This is a simple approach - for a more sophisticated solution,
+                    // you could dynamically add the new comment to the DOM
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting comment:', error);
+            });
+        });
+    }
+});

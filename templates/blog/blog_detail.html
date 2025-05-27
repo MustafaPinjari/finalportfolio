@@ -1,33 +1,12 @@
+{% extends 'blog/blog_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ post.title }}</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
-    <!-- Add CSRF token meta tag for AJAX requests -->
-    <meta name="csrf-token" content="{{ csrf_token }}">
-</head>
-<body class="w-screen overflow-x-hidden dark:bg-darkTheme dark:text-white">
-    <!-- Navbar (Same as blog_list.html) -->
-    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-darkTheme shadow-sm">
-        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
-        <ul class="hidden md:flex gap-6">
-            <li><a href="{% url 'home' %}" class="hover:text-lightHover" style="color: #ff7f50;">Home</a></li>
-            <li><a href="/about" class="hover:text-lightHover" style="color: #ff7f50;">About</a></li>
-            <li><a href="/blogs" class="hover:text-lightHover" style="color: #ff7f50;">Blogs</a></li>
-            <li><a href="/contact" class="hover:text-lightHover" style="color: #ff7f50;">Contact</a></li>
-        </ul>
-        <button id="menu-button" class="md:hidden text-3xl text-coral focus:outline-none">&#9776;</button>
-    </nav>
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
 
     <!-- Main Content -->
-    <main class="mt-20 px-[8%] max-w-4xl mx-auto">
+    <main class="mt-20 px-[8%] mx-auto container">
         <!-- Blog Header -->
         <div class="mb-12 text-center">
             <div class="flex flex-wrap gap-2 justify-center mb-6">
@@ -79,9 +58,9 @@
         {% endif %}
 
         <!-- Blog Content -->
-        <article class="prose prose-lg prose-invert max-w-none mb-12">
+        <article class="prose prose-lg prose-invert w-full mb-12">
             <div class="bg-darkHover/30 backdrop-blur-sm rounded-xl p-8 shadow-lg border border-white/10">
-                <div class="prose-headings:text-coral prose-p:text-gray-300 prose-strong:text-coral prose-a:text-coral hover:prose-a:text-coral/70">
+                <div class="prose-headings:text-coral prose-p:text-gray-300 prose-strong:text-coral prose-a:text-coral hover:prose-a:text-coral/70 max-w-none">
                     {{ post.content|safe }}
                 </div>
             </div>
@@ -116,7 +95,7 @@
                 </h2>
                 
                 <!-- Comment Form -->
-                <form method="post" class="mb-12 bg-black/30 backdrop-blur-md rounded-xl p-6 border border-white/10 transition-all hover:border-coral/30">
+                <form method="post" id="comment-form" class="mb-12 bg-black/30 backdrop-blur-md rounded-xl p-6 border border-white/10 transition-all hover:border-coral/30">
                     <div class="absolute inset-0 bg-gradient-to-br from-coral/5 to-purple-500/5 rounded-xl opacity-25"></div>
                 {% csrf_token %}
                 <div class="mb-4">
@@ -184,33 +163,8 @@
             </div>
         </div>
     </main>
+{% endblock %}
 
-    <!-- Footer (Same as blog_list.html) -->
-    <footer class="mx-auto flex w-full flex-col px-[8%] text-white">
-        <div class="flex w-full flex-col items-center gap-5 border-b-[0.5px] border-gray-500 pb-20">
-            <img src="{% static 'img/logo.png'%}" loading="lazy" alt="" class="w-40 dark:hidden" />
-            <img src="{% static 'img/logo_dark.png'%}" loading="lazy" alt="" class="hidden w-40 dark:block" />
-            <p class="flex gap-2 text-center text-sm text-white">
-                <img src="{% static 'img/mail_icon.png' %}" loading="lazy" alt="" class="w-6 dark:hidden" />
-                <img src="{% static 'img/mail_icon_dark.png'%}" loading="lazy" alt="" class="hidden w-6 dark:block" />
-                mustafapinjari344@gmail.com
-            </p>
-        </div>
-        <div class="flex flex-col items-center justify-between gap-5 py-10 md:flex-row">
-            <p class="text-lg font-semibold text-white">
-                &copy; 2024 Mustafa Pinjari. All rights reserved.
-            </p>
-            <div class="flex gap-8 md:gap-12 text-white">
-                <a href="https://github.com/MustafaPinjari" class="font-medium">Github</a>
-                <a href="https://www.whatsapp.com/send?text={{ post.title }}%20-%20{{ request.build_absolute_uri }}" class="font-medium">WhatsApp</a>
-                <a href="https://www.instagram.com/its_ur_musuuu/" class="font-medium">Instagram</a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="{% static 'js/sidebar.js' %}"></script>
-    <!-- Add this before closing body tag -->
-    <script src="{% static 'js/blog.js' %}"></script>
-</body>
-</html>
+{% block extra_scripts %}
+<script src="{% static 'js/blog.js' %}"></script>
+{% endblock %}

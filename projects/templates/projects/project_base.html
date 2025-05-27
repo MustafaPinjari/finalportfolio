@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Projects{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap">
+    <!-- Add CSRF token meta tag for AJAX requests -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coral: '#ff7f50',
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(to right, #b820e6, #da7d20)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #b820e6, #da7d20);
+            border-radius: 2px;
+        }
+        
+        /* Image gallery */
+        .gallery-backdrop {
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black text-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="fixed top-0 z-50 w-full flex items-center justify-between px-[8%] py-4 bg-gray-800/50 backdrop-blur-lg border-b border-gray-700/50">
+        <!-- Logo -->
+        <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="w-28">
+    
+        <!-- Menu Items (Hidden on Mobile) -->
+        <ul class="hidden md:flex gap-6">
+            <li><a href="{% url 'home' %}" class="text-gray-300 hover:text-white transition-colors duration-200">Home</a></li>
+            <li><a href="/about" class="text-gray-300 hover:text-white transition-colors duration-200">About</a></li>
+            <li><a href="{% url 'blog:blog_list' %}" class="text-gray-300 hover:text-white transition-colors duration-200">Blogs</a></li>
+            <li><a href="{% url 'projects:projects_list' %}" class="font-semibold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">Projects</a></li>
+            <li><a href="/contact" class="text-gray-300 hover:text-white transition-colors duration-200">Contact</a></li>
+        </ul>
+    
+        <!-- Hamburger Icon (Visible on Mobile) -->
+        <button id="menu-button" class="md:hidden text-gray-400 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    
+        <!-- Mobile Sidebar -->
+        <div id="sidebar" class="fixed top-0 right-0 w-64 h-screen bg-gray-800/50 backdrop-blur-lg border-l border-gray-700/50 transform translate-x-full transition-transform duration-300 z-50">
+            <div class="flex items-center justify-between p-4 border-b border-gray-700/50">
+                <h1 class="text-xl font-bold bg-gradient-to-r from-[#b820e6] to-[#da7d20] bg-clip-text text-transparent">Projects</h1>
+                <button id="close-sidebar" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="mt-6 px-4 overflow-y-auto">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'home' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 hover:text-white transition-all duration-200">
+                            <i class="fas fa-home w-5 h-5"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/about" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 hover:text-white transition-all duration-200">
+                            <i class="fas fa-user w-5 h-5"></i>
+                            <span>About</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:blog_list' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 hover:text-white transition-all duration-200">
+                            <i class="fas fa-blog w-5 h-5"></i>
+                            <span>Blogs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'projects:projects_list' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-gradient-to-r from-[#b820e6]/20 to-[#da7d20]/20 text-white transition-all duration-200">
+                            <i class="fas fa-project-diagram w-5 h-5"></i>
+                            <span>Projects</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/contact" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 hover:text-white transition-all duration-200">
+                            <i class="fas fa-envelope w-5 h-5"></i>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li>
+                        <a href="{% url 'custom_admin' %}" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700/30 hover:text-white transition-all duration-200">
+                            <i class="fas fa-cog w-5 h-5"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative mt-24 bg-darkTheme text-white">
+        <!-- Decorative gradient overlay -->
+        <div class="absolute inset-0 opacity-20 overflow-hidden pointer-events-none">
+            <div class="absolute -inset-x-40 -top-40 -bottom-40 bg-gradient-to-r from-[#b820e6] to-[#da7d20] blur-3xl"></div>
+        </div>
+
+        <div class="relative container mx-auto px-6 py-12">
+            <!-- Footer Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                <!-- Brand Section -->
+                <div class="col-span-1 lg:col-span-1">
+                    <img src="{% static 'img/Mustafa_dark.png' %}" alt="Logo" class="h-12 mb-6">
+                    <p class="text-gray-400 mb-6">Showcasing innovative projects and solutions through elegant design and robust engineering.</p>
+                    <!-- Social Media Icons -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-coral transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-coral transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-coral transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-coral transition-colors">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-6 text-coral">Navigation</h3>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'home' %}" class="text-gray-400 hover:text-coral transition-colors">Home</a></li>
+                        <li><a href="/about" class="text-gray-400 hover:text-coral transition-colors">About</a></li>
+                        <li><a href="{% url 'blog:blog_list' %}" class="text-gray-400 hover:text-coral transition-colors">Blogs</a></li>
+                        <li><a href="{% url 'projects:projects_list' %}" class="text-gray-400 hover:text-coral transition-colors">Projects</a></li>
+                        <li><a href="/contact" class="text-gray-400 hover:text-coral transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-6 text-coral">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-coral transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-coral transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-coral transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-coral transition-colors">Sitemap</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="col-span-1">
+                    <h3 class="text-lg font-semibold mb-6 text-coral">Stay Updated</h3>
+                    <p class="text-gray-400 mb-4">Subscribe to get the latest updates on new projects and blogs.</p>
+                    <form class="space-y-2">
+                        <input type="email" placeholder="Your email address" 
+                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:border-coral">
+                        <button type="button" 
+                                class="w-full px-4 py-2 bg-coral text-white rounded-md hover:bg-coral/80 transition-colors">
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-t border-gray-800 my-8"></div>
+
+            <!-- Copyright -->
+            <div class="text-center text-gray-500 text-sm">
+                <p>&copy; {% now "Y" %} Portfolio. All rights reserved.</p>
+                <p class="mt-2">Designed with <span class="text-coral">❤</span> and modern web technologies</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Common Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const menuButton = document.getElementById('menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const closeSidebar = document.getElementById('close-sidebar');
+
+            if (menuButton && sidebar && closeSidebar) {
+                menuButton.addEventListener('click', function() {
+                    sidebar.classList.toggle('translate-x-full');
+                });
+
+                closeSidebar.addEventListener('click', function() {
+                    sidebar.classList.add('translate-x-full');
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
