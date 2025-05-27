@@ -1,66 +1,9 @@
-const menu = document.querySelector("#sidemenu");
-const body = document.querySelector("body");
+// Global elements
 const navbar = document.querySelector("#navbar");
 const menubar = document.querySelector("#menubar");
-function openMenu() {
-  const backdrop = document.getElementById('mobile-backdrop');
-  const sidemenu = document.getElementById('sidemenu');
-  
-  // Show the menu and backdrop
-  sidemenu.classList.add('translate-x-0');
-  sidemenu.classList.remove('translate-x-full');
-  backdrop.classList.remove('hidden');
-  
-  // Prevent body scrolling
-  document.body.classList.add('overflow-hidden');
-  
-  // Add event listeners for escape key
-  document.addEventListener('keydown', closeMenuOnEscape);
-}
-
-function closeMenu() {
-  const backdrop = document.getElementById('mobile-backdrop');
-  const sidemenu = document.getElementById('sidemenu');
-  
-  // Hide the menu and backdrop
-  sidemenu.classList.remove('translate-x-0');
-  sidemenu.classList.add('translate-x-full');
-  backdrop.classList.add('hidden');
-  
-  // Allow body scrolling again
-  document.body.classList.remove('overflow-hidden');
-  
-  // Remove event listeners
-  document.removeEventListener('keydown', closeMenuOnEscape);
-}
-
-function closeMenuOnEscape(e) {
-  if (e.key === 'Escape') {
-    closeMenu();
-  }
-}
-// Initialize mobile menu when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize mobile menu variables
-  const sidemenu = document.getElementById('sidemenu');
-  const backdrop = document.getElementById('mobile-backdrop');
-  const closeButton = document.getElementById('close-menu');
-  const openButton = document.getElementById('open-menu');
-  
-  // Ensure menu starts in the correct state
-  if (sidemenu) {
-    sidemenu.classList.add('translate-x-full');
-  }
-  
-  // Add click handlers to all mobile menu links that should close the menu
-  const mobileMenuLinks = document.querySelectorAll('#sidemenu a[onclick="closeMenu()"]');
-  mobileMenuLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      // Keep the link's default behavior but also close the menu
-      closeMenu();
-    });
-  });
-});
+// Mobile menu functionality has been moved to inline JavaScript in base.html
+// Mobile menu functionality has been moved to inline JavaScript in base.html
+// Original event listeners removed to avoid conflicts
 
 window.addEventListener("scroll", () => {
   if (scrollY < 50) {
