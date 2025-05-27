@@ -17,7 +17,7 @@ daphne==4.0.0
 
 # Asset management
 django-compressor==4.5.1
-rcssmin==1.1.1
+rcssmin==1.1.2
 rjsmin==1.2.2
 
 # Tagging system
